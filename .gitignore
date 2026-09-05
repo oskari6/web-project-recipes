@@ -1,1 +1,10 @@
-temp
+database.db
+todo.txt
+.venv/
+__pycache__/
+*.pyc
+.env
+static/uploads/*
+!static/uploads/recipes/
+static/uploads/recipes/*
+!static/uploads/recipes/seed_placeholder.jpg
