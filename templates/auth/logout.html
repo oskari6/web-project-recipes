@@ -1,0 +1,12 @@
+<button type="button" onclick="logoutModal.showModal()">
+  Logout
+</button>
+
+<dialog id="logoutModal">
+  <form action="{{ url_for('auth.logout') }}" method="post">
+    <p>Do you want to logout?</p>
+
+    <button type="submit">Confirm</button>
+    <button type="button" onclick="logoutModal.close()">Cancel</button>
+  </form>
+</dialog>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}User - Recipe App{% endblock %}
+{% block content %}
+<h1>Register account</h1>
+<form action="/auth/register" method="post" class="flex-column">
+ load if no create form
+  {# <form action="/add_image" method="post" enctype="multipart/form-data">
+    <span>Kuva: <input type="file" name="image" accept=".jpg" /></span>
+    <button type="submit">Save</button>
+    {% for message in get_flashed_messages() %}
+    <span>
+      <b>{{ message }}</b>
+    </span>
+    {% endfor %}
+  </form> #}
+  
+  <label>
+    Username:
+    <input
+      type="text"
+      name="username"
+      value="{{ filled.username }}"
+      maxlength="16"
+    />
+  </label>
+  <label>
+    Password:
+    <input
+      type="password"
+      name="password"
+      value="{{ filled.username }}"
+      maxlength="16"
+    />
+  </label>
+  <label>
+    Password confirmation:
+    <input
+      type="password"
+      name="passwordConfirm"
+      value="{{ filled.username }}"
+      maxlength="16"
+    />
+  </label>
+  <button type="submit">Register</button>
+</form>
+{% endblock %}

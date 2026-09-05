@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Login - Recipe App{% endblock %}
+{% block content %}
+<h1>Sign In</h1>
+<form action="/auth/login" method="post" class="flex-column">
+    <label>
+        <span>Username:</span>
+        <input type="text" name="username" />
+    </label>
+    <label>
+        <span>Password:</span>
+        <input type="password" name="password" />
+    </label>
+    <button type="submit">Login</button>
+</form>
+{% endblock %}
