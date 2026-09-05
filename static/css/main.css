@@ -174,6 +174,146 @@ dialog::backdrop {
   }
 }
 
+header {
+  width: 100%;
+  background: var(--color-background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  padding: 1em;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
+
+header nav a {
+  color: #222;
+  text-decoration: none;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+footer {
+  width: 100%;
+  background: var(--color-background);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: auto;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-container a {
+  color: #222;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.footer-container a:hover {
+  text-decoration: underline;
+}
+
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  align-items: center;
+  gap: 5rem;
+}
+
+/* Text */
+
+.hero-text {
+  max-width: 500px;
+}
+
+.hero-label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #777;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  line-height: 1.05;
+  margin: 0.7rem 0 1.2rem;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.hero-button {
+  display: inline-block;
+  padding: 0.8rem 1.4rem;
+
+  background: #222;
+  color: var(--color-background);
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.hero-button:hover {
+  background: #444;
+}
+
+/* Images */
+
+.hero-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.hero-image {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.hero-image.vertical {
+  height: 320px;
+}
+
+.hero-image.horizontal {
+  height: 200px;
+}
+
+/* staggered layout */
+.hero-image:nth-child(2) {
+  margin-top: 3rem;
+}
+
+.hero-image:nth-child(4) {
+  margin-top: -3rem;
+}
+
 /* Accessibility */
 :focus-visible {
   outline: 2px solid currentColor;
