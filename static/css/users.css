@@ -1,0 +1,172 @@
+.user-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.profile-card {
+  padding: 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-picture-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.profile-info h1 {
+  margin-bottom: 0.5rem;
+}
+
+.profile-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  color: #666;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.user-recipes-section {
+  margin-top: 3rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-header span {
+  color: #777;
+}
+
+.user-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 1rem;
+}
+
+.user-panel {
+  width: 100%;
+  max-width: 400px;
+
+  padding: 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.user-panel h1 {
+  margin-bottom: 1.5rem;
+}
+
+.user-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.user-panel input {
+  width: 100%;
+}
+
+.user-panel button {
+  margin-top: 0.5rem;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 1rem 1.25rem;
+
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.user-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.user-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eee;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-size: 1.05rem;
+}
+
+.user-meta {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.user-recipes {
+  margin-left: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.user-recipes strong {
+  font-size: 1.1rem;
+  color: #222;
+}
