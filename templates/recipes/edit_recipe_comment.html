@@ -1,0 +1,27 @@
+<button style="background-color: var(--color-alt)" type="button" onclick="editCommentModal.showModal()">
+  Edit
+</button>
+
+<dialog id="editCommentModal">
+  <form 
+    action="{{ url_for('recipes.edit_comment', comment_id=comment.id) }}" 
+    method="post"
+    class="flex-column">
+    <p>Edit comment</p>
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+    >
+    <textarea
+      name="comment"
+      rows="3"
+      required
+      style="min-width: 500px"
+    >{{ comment.value }}</textarea>
+    <div>
+      <button style="background-color: var(--color-primary)" type="submit">Save</button>
+      <button type="button" onclick="editCommentModal.close()">Cancel</button>
+    </div>
+  </form>
+</dialog>

@@ -1,0 +1,29 @@
+<button style="background-color: var(--color-alt)" type="button" onclick="editRatingModal.showModal()">
+  Change rating
+</button>
+
+<dialog id="editRatingModal">
+  <form 
+    action="{{ url_for('recipes.edit_rating', rating_id=user_rating.id) }}" 
+    method="post"
+    class="flex-column">
+    <p>Edit rating</p>
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+    >
+    <input
+      name="rating"
+      type="number"
+      min="1"
+      max="5"
+      required
+      value="{{ user_rating.value }}"
+    >
+    <div>
+      <button style="background-color: var(--color-primary)" type="submit">Save</button>
+      <button type="button" onclick="editRatingModal.close()">Cancel</button>
+    </div>
+  </form>
+</dialog>
