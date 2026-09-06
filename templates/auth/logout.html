@@ -1,4 +1,4 @@
-<button type="button" onclick="logoutModal.showModal()">
+<button style="background-color: var(--color-danger)" type="button" onclick="logoutModal.showModal()">
   Logout
 </button>
 
@@ -6,7 +6,7 @@
   <form action="{{ url_for('auth.logout') }}" method="post">
     <p>Do you want to logout?</p>
 
-    <button type="submit">Confirm</button>
+    <button style="background-color: var(--color-danger)" type="submit">Confirm</button>
     <button type="button" onclick="logoutModal.close()">Cancel</button>
   </form>
 </dialog>

@@ -12,12 +12,13 @@ def get_csrf_token():
 def require_csrf(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        token = request.form.get("csrf_token")
+        if request.method == "POST":
+            token = request.form.get("csrf_token")
 
-        if not token or not secrets.compare_digest(
-            token, session.get("csrf_token", "")
-        ):
-            abort(403)
+            if not token or not secrets.compare_digest(
+                token, session.get("csrf_token", "")
+            ):
+                abort(403)
 
         return func(*args, **kwargs)
 
