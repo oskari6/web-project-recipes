@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Recipes - Recipe App{% endblock %}
+
+{% block content %}
+<section class="hero-wide" style="background-image: url('/static/images/hero6.jpg');">
+  <div class="hero-content">
+      <h1 style="padding: 1rem; color:white">Find recipes</h1>
+  </div>
+</section>
+
+<div style="padding: 1rem;">
+  <form action="{{ url_for('recipes.recipes', page=1) }}" method="get">
+    <label>
+      <input
+        type="text"
+        name="query"
+        placeholder="search recipes..."
+        value="{{ query }}"
+      >
+    </label>
+
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="recipe-list">
+    {% for recipe in recipes %}
+      <div class="recipe-card">
+
+        <div class="recipe-card-image">
+          {% if recipe.image_filename %}
+            <img
+              src="{{ url_for('static', filename='uploads/recipes/' ~ recipe.id ~ '/' ~ recipe.image_filename) }}"              alt="{{ recipe.title }}"
+            >
+          {% else %}
+            <div class="recipe-image-placeholder">
+              No image
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="recipe-card-content">
+          <h2>
+            <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id) }}">
+              {{ recipe.title }}
+            </a>
+          </h2>
+
+          <p class="recipe-card-description">
+            {{ recipe.description }}
+          </p>
+
+          <div class="recipe-card-details">
+            <span><strong>Food type:</strong> {{ recipe.food_type or "—" }}</span>
+
+            <span>
+              <strong>Diet:</strong>
+              {{ recipe.dietary_requirements or "—" }}
+            </span>
+
+            <span>
+              <strong>Servings:</strong>
+              {{ recipe.servings or "—" }}
+            </span>
+
+            <span>
+              <strong>Preparation:</strong>
+              {% if recipe.preparation_time %}
+                {{ recipe.preparation_time }} min
+              {% else %}
+                —
+              {% endif %}
+            </span>
+          </div>
+
+          <div class="recipe-card-meta">
+            <span>
+              <strong>Creator:</strong>
+              <a href="{{ url_for('users.user', user_id=recipe.creator_id) }}">
+                @{{ recipe.creator_username }}
+              </a>
+            </span>
+
+            <span>Created {{ recipe.created_at }}</span>
+            <span>Updated {{ recipe.updated_at }}</span>
+          </div>
+        </div>
+
+      </div>
+    {% else %}
+      <p>No recipes found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
