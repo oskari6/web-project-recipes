@@ -21,12 +21,17 @@ def get_connection():
     con.row_factory = sqlite3.Row
     return con
 
-def execute(sql, params=()):
-    con = get_connection()
+def execute(sql, params=(), con=None):
+    own_connection = con is None
+
+    if own_connection:
+        con = get_connection()
     result = con.execute(sql, params)
-    con.commit()
     last_id = result.lastrowid
-    con.close()
+    if own_connection:
+        con.commit()
+        con.close()
+    return last_id
 
 def query(sql, params=()):
     con = get_connection()

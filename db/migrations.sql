@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    profile_picture BLOB,
+    profile_picture TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     preparation_time INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES users(id)
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS recipe_ingredients (
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
     ingredient TEXT NOT NULL,
     amount REAL,
     unit TEXT,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS recipe_steps (
@@ -35,15 +35,14 @@ CREATE TABLE IF NOT EXISTS recipe_steps (
     recipe_id INTEGER NOT NULL,
     step_number INTEGER NOT NULL,
     instruction TEXT NOT NULL,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS recipe_images (
     id INTEGER PRIMARY KEY,
     recipe_id INTEGER NOT NULL,
     file_name TEXT NOT NULL,
-    image_order INTEGER NOT NULL,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS recipe_comments (
@@ -52,9 +51,8 @@ CREATE TABLE IF NOT EXISTS recipe_comments (
     creator_id INTEGER NOT NULL,
     recipe_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (creator_id) REFERENCES users(id),
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS recipe_ratings (
@@ -62,8 +60,9 @@ CREATE TABLE IF NOT EXISTS recipe_ratings (
     value INTEGER NOT NULL CHECK (value BETWEEN 1 AND 5),
     creator_id INTEGER NOT NULL,
     recipe_id INTEGER NOT NULL,
-    FOREIGN KEY (creator_id) REFERENCES users(id),
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
     UNIQUE (creator_id, recipe_id)
 );
 

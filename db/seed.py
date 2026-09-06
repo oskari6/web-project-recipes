@@ -42,7 +42,9 @@ for i in range(1, RECIPE_COUNT + 1):
         """INSERT INTO recipes
               (title, description, creator_id, food_type,
                dietary_requirements, servings, preparation_time)
-           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?)
+           RETURNING *
+           """,
         [
             f"Recipe {i}",
             f"Description for recipe {i}",
@@ -99,8 +101,8 @@ for i in range(1, RECIPE_COUNT + 1):
     for j in range(1, image_count + 1):
         db.execute(
             """INSERT INTO recipe_images
-                  (recipe_id, file_name, image_order)
-               VALUES (?, ?, ?)""",
+                  (recipe_id, file_name)
+               VALUES (?, ?)""",
             [
                 recipe_id,
                 "placeholder.jpg",

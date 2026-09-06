@@ -11,3 +11,5 @@ setup:
 	bash  setup.sh
 seed:
 	.venv/bin/python db/seed.py
+reset-db:
+	python3 -m db.reset_db
