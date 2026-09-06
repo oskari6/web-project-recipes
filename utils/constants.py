@@ -12,6 +12,19 @@ DIETARY_REQUIREMENTS = [
     "Gluten-free"
 ]
 
+UNITS = [
+    "g",
+    "kg",
+    "ml",
+    "l",
+    "tsp",
+    "tbsp",
+    "cup",
+    "pcs",
+]
+
 PAGE_SIZE = 20
 
 MAX_RECIPE_IMAGES = 5
+
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
