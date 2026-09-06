@@ -1,0 +1,16 @@
+<button style="background-color: var(--color-danger)" type="button" onclick="removeImageModal.showModal()">
+  Remove
+</button>
+
+<dialog id="removeImageModal">
+  <form action="{{ url_for('recipes.remove_image') }}" method="post">
+    <p>Do you want to remove the image?</p>
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+    >
+    <button style="background-color: var(--color-danger)" type="submit">Confirm</button>
+    <button type="button" onclick="removeImageModal.close()">Cancel</button>
+  </form>
+</dialog>

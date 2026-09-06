@@ -1,0 +1,18 @@
+<button type="button" onclick="removeCommentModal.showModal()">
+  Remove
+</button>
+
+<dialog id="removeCommentModal">
+  <form  
+    action="{{ url_for('recipes.remove_comment', comment_id=comment.id) }}"
+    method="post">
+    <p>Do you want to remove the comment?</p>
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+    >
+    <button style="background-color: var(--color-danger)" type="submit">Confirm</button>
+    <button type="button" onclick="removeCommentModal.close()">Cancel</button>
+  </form>
+</dialog>
