@@ -50,7 +50,7 @@
               <input
                 type="text"
                 name="username"
-                value="{{ user.username if editing else filled.username | default('') }}"
+                value="{{ user.username if editing else '' }}"
                 maxlength="16"
                 required
               >

@@ -1,6 +1,5 @@
+"""Users service functions"""
 from db import utils as db_utils
-
-# Users service functions
 
 def get_user(user_id):
     """
@@ -74,7 +73,6 @@ def get_users(page, page_size, query=None):
 
     return db_utils.query(sql, params)
 
-
 def get_user_by_username(username):
     """
     Return a user by their username.
@@ -97,7 +95,6 @@ def get_user_by_username(username):
 
     return result[0] if result else None
 
-
 def create_user(username, password_hash, filename=None):
     """
     Create a new user.
@@ -113,7 +110,6 @@ def create_user(username, password_hash, filename=None):
              VALUES (?, ?, ?)"""
 
     return db_utils.execute(sql, [username, password_hash, filename])
-
 
 def update_user(user_id, username, password_hash, profile_pic_filename):
     """
@@ -133,7 +129,6 @@ def update_user(user_id, username, password_hash, profile_pic_filename):
 
     db_utils.execute(sql, [username, password_hash, profile_pic_filename, user_id])
 
-
 def remove_profile_picture(user_id):
     """
     Remove a user's profile picture.
@@ -146,7 +141,6 @@ def remove_profile_picture(user_id):
              WHERE id = ?"""
 
     db_utils.execute(sql, [user_id])
-
 
 def get_user_recipes(user_id):
     """
@@ -165,7 +159,6 @@ def get_user_recipes(user_id):
              ORDER BY created_at DESC"""
 
     return db_utils.query(sql, [user_id])
-
 
 def delete_user(user_id):
     """

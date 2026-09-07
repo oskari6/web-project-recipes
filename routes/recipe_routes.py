@@ -1,15 +1,14 @@
+"""Recipe routes"""
 import math
 from pathlib import Path
 from uuid import uuid4
-
-from flask import abort, redirect, request, session, Blueprint, render_template, url_for
-from flask import render_template
 import sqlite3
+from werkzeug.utils import secure_filename
+from flask import abort, redirect, request, session, Blueprint, render_template, url_for
 from services import recipe_service
 from services import user_service
 from utils.constants import ALLOWED_IMAGE_EXTENSIONS, DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS
 from utils.decorators import require_csrf, require_login
-from werkzeug.utils import secure_filename
 from db import utils as db_utils
 
 bp = Blueprint("recipes", __name__)
@@ -17,6 +16,11 @@ bp = Blueprint("recipes", __name__)
 
 @bp.route("/recipes/<int:page>")
 def recipes(page=1):
+    """
+    Recipes route
+    Args:
+        page(int) : page number
+    """
     page_size = 10
     query = request.args.get("query", "").strip()
 
@@ -29,19 +33,23 @@ def recipes(page=1):
     if page > page_count:
         return redirect(url_for("recipes.recipes", page=page_count, query=query))
 
-    recipes = recipe_service.get_recipes(page, page_size, query=query)
     return render_template("/recipes/recipes.html",
         page=page,
         page_count=page_count,
-        recipes=recipes,
+        recipes=recipe_service.get_recipes(page, page_size, query=query),
         query=query
     )
 
 
 @bp.route("/recipes/recipe/<int:recipe_id>")
 def recipe(recipe_id):
-    recipe = recipe_service.get_recipe(recipe_id)
-    if not recipe:
+    """
+    Recipe route
+    Args:
+        recipe_id(int) : id of recipe
+    """
+    found_recipe = recipe_service.get_recipe(recipe_id)
+    if not found_recipe:
         abort(404)
     user_rating = None
 
@@ -56,11 +64,11 @@ def recipe(recipe_id):
     comments = recipe_service.get_comments(recipe_id)
     ratings = recipe_service.get_ratings(recipe_id)
     avg_rating = recipe_service.get_average_rating(recipe_id)
-    user = user_service.get_user(recipe["creator_id"])
+    user = user_service.get_user(found_recipe["creator_id"])
 
     return render_template(
         "/recipes/recipe.html",
-        recipe=recipe,
+        recipe=found_recipe,
         ingredients=ingredients,
         recipe_steps=recipe_steps,
         images=images,
@@ -76,8 +84,11 @@ def recipe(recipe_id):
 @require_login
 @require_csrf
 def create_recipe():
+    """
+    Create recipe route
+    """
     if request.method == "GET":
-        return render_template("/recipes/recipe_form.html", 
+        return render_template("/recipes/recipe_form.html",
             recipe=None,
             recipe_ingredients=[],
             recipe_steps=[],
@@ -94,13 +105,6 @@ def create_recipe():
     servings = request.form["servings"]
     preparation_time = request.form["preparation_time"]
 
-    ingredients = request.form.getlist("ingredient")
-    amounts = request.form.getlist("ingredient_amount")
-    units = request.form.getlist("ingredient_unit")
-
-    steps = request.form.getlist("recipe_step")
-    images = request.files.getlist("images")
-
     con = db_utils.get_connection()
     try:
         new_recipe_id = recipe_service.create_recipe(
@@ -114,57 +118,29 @@ def create_recipe():
             con
         )
 
-        for ingredient, amount, unit in zip(
-            ingredients,
-            amounts,
-            units
-        ):
-            if not ingredient.strip():
-                continue
-            recipe_service.add_ingredient(
-                new_recipe_id,
-                ingredient,
-                amount,
-                unit,
-                con
-            )
+        recipe_service.create_ingredients(
+            new_recipe_id,
+            ingredients=request.form.getlist("ingredient"),
+            amounts=request.form.getlist("ingredient_amount"),
+            units=request.form.getlist("ingredient_unit"),
+            con=con
+        )
 
-        step_number = 1
-        for instruction in steps:
-            if not instruction.strip():
-                continue
-            recipe_service.add_step(
-                new_recipe_id,
-                step_number,
-                instruction,
-                con
-            )
-            step_number += 1
+        recipe_service.create_recipe_steps(
+            new_recipe_id,
+            steps=request.form.getlist("recipe_step"),
+            con=con
+        )
 
-        upload_dir = Path("static/uploads/recipes") / str(new_recipe_id)
-        upload_dir.mkdir(parents=True, exist_ok=True)
-        for image in images:
-            if not image or not image.filename:
-                continue
+        create_recipe_images(
+            new_recipe_id,
+            images=request.files.getlist("images"),
+            con=con
+        )
 
-            original_name = secure_filename(image.filename)
-            extension = Path(original_name).suffix.lower()
-
-            if extension not in ALLOWED_IMAGE_EXTENSIONS:
-                abort(400)
-
-            filename = f"{uuid4().hex}{extension}"
-
-            image.save(upload_dir / filename)
-
-            recipe_service.add_image(
-                new_recipe_id,
-                filename,
-                con
-            )
         con.commit()
     except sqlite3.IntegrityError:
-            abort(403)
+        abort(403)
     except Exception:
         con.rollback()
         raise
@@ -173,19 +149,57 @@ def create_recipe():
 
     return redirect(url_for("recipes.recipe", recipe_id=new_recipe_id))
 
+def create_recipe_images(
+    recipe_id,
+    images,
+    con
+):
+    """
+    Create images utility function
+    Args:
+        recipe_id(int) : id of recipe
+        steps(list): list
+        con(Connection) : connection object
+    """
+    upload_dir = Path("static/uploads/recipes") / str(recipe_id)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    for image in images:
+        if not image or not image.filename:
+            continue
+
+        original_name = secure_filename(image.filename)
+        extension = Path(original_name).suffix.lower()
+
+        if extension not in ALLOWED_IMAGE_EXTENSIONS:
+            abort(400)
+
+        filename = f"{uuid4().hex}{extension}"
+
+        image.save(upload_dir / filename)
+
+        recipe_service.add_image(
+            recipe_id,
+            filename,
+            con
+        )
 
 @bp.route("/recipes/edit/<int:recipe_id>", methods=["GET", "POST"])
 @require_login
 @require_csrf
 def edit_recipe(recipe_id):
-    recipe = recipe_service.get_recipe(recipe_id)
-    if recipe["creator_id"] != session["user_id"]:
+    """
+    Edit recipe route
+    Args:
+        recipe_id(int) : id of recipe
+    """
+    found_recipe = recipe_service.get_recipe(recipe_id)
+    if found_recipe["creator_id"] != session["user_id"]:
         abort(403)
 
     if request.method == "GET":
         return render_template(
             "recipes/recipe_form.html",
-            recipe=recipe,
+            recipe=found_recipe,
             recipe_ingredients=recipe_service.get_ingredients(recipe_id),
             recipe_steps=recipe_service.get_recipe_steps(recipe_id),
             recipe_images=recipe_service.get_images(recipe_id),
@@ -201,13 +215,6 @@ def edit_recipe(recipe_id):
     servings = request.form["servings"]
     preparation_time = request.form["preparation_time"]
 
-    ingredients = request.form.getlist("ingredient")
-    amounts = request.form.getlist("ingredient_amount")
-    units = request.form.getlist("ingredient_unit")
-
-    steps = request.form.getlist("recipe_step")
-    images = request.files.getlist("images")
-
     con = db_utils.get_connection()
     try:
         recipe_service.update_recipe(
@@ -221,40 +228,21 @@ def edit_recipe(recipe_id):
             con
         )
 
-        recipe_service.remove_all_ingredients(recipe_id, con)
-        for ingredient, amount, unit in zip(
-                ingredients,
-                amounts,
-                units
-            ):
-                if not ingredient.strip():
-                    continue
+        recipe_service.create_ingredients(
+            recipe_id,
+            ingredients=request.form.getlist("ingredient"),
+            amounts=request.form.getlist("ingredient_amount"),
+            units=request.form.getlist("ingredient_unit"),
+            con=con
+        )
 
-                recipe_service.add_ingredient(
-                    recipe_id,
-                    ingredient,
-                    amount,
-                    unit,
-                    con
-                )
+        recipe_service.create_recipe_steps(
+            recipe_id,
+            steps=request.form.getlist("recipe_step"),
+            con=con
+        )
 
-        # Update steps
-        recipe_service.remove_all_steps(recipe_id, con)
-        step_number = 1
-
-        for instruction in steps:
-            if not instruction.strip():
-                continue
-
-            recipe_service.add_step(
-                recipe_id,
-                step_number,
-                instruction,
-                con
-            )
-
-            step_number += 1
-
+        # remove first, create new ones.
         removed_images = request.form.getlist("remove_image")
         for image_id in removed_images:
             recipe_service.remove_image(
@@ -263,28 +251,12 @@ def edit_recipe(recipe_id):
                 con
             )
 
-        # Add newly uploaded images
-        upload_dir = Path("static/uploads/recipes") / str(recipe_id)
-        upload_dir.mkdir(parents=True, exist_ok=True)
-        for image in images:
-            if not image or not image.filename:
-                continue
+        create_recipe_images(
+            recipe_id,
+            images=request.files.getlist("images"),
+            con=con
+        )
 
-            original_name = secure_filename(image.filename)
-            extension = Path(original_name).suffix.lower()
-
-            if extension not in ALLOWED_IMAGE_EXTENSIONS:
-                abort(400)
-
-            filename = f"{uuid4().hex}{extension}"
-
-            image.save(upload_dir / filename)
-
-            recipe_service.add_image(
-                recipe_id,
-                filename,
-                con
-            )
         con.commit()
     except sqlite3.IntegrityError:
         con.rollback()
@@ -302,6 +274,11 @@ def edit_recipe(recipe_id):
 
 @bp.route("/recipes/remove/<int:recipe_id>", methods=["POST"])
 def remove_recipe(recipe_id):
+    """
+    Remove recipe route
+    Args:
+        recipe_id(int) : id of recipe
+    """
     recipe_service.delete_recipe(recipe_id)
     return redirect(url_for("recipes"))
 
@@ -310,8 +287,12 @@ def remove_recipe(recipe_id):
 @require_login
 @require_csrf
 def create_comment(recipe_id):
-    recipe = recipe_service.get_recipe(recipe_id)
-    if not recipe:
+    """
+    Create recipe comment route
+    Args:
+        recipe_id(int) : id of recipe
+    """
+    if not recipe_service.get_recipe(recipe_id):
         abort(404)
 
     comment = request.form["comment"]
@@ -324,6 +305,11 @@ def create_comment(recipe_id):
 @require_login
 @require_csrf
 def edit_comment(comment_id):
+    """
+    Edit recipecomment  route
+    Args:
+        comment_id(int) : id of comment
+    """
     comment = recipe_service.get_comment_by_id(comment_id)
     if not comment:
         abort(404)
@@ -338,6 +324,11 @@ def edit_comment(comment_id):
 @require_login
 @require_csrf
 def remove_comment(comment_id):
+    """
+    Remove recipe comment route
+    Args:
+        comment(int) : id of comment
+    """
     comment = recipe_service.get_comment_by_id(comment_id)
     if not comment:
         abort(404)
@@ -351,8 +342,12 @@ def remove_comment(comment_id):
 @require_login
 @require_csrf
 def create_rating(recipe_id):
-    recipe = recipe_service.get_recipe(recipe_id)
-    if not recipe:
+    """
+    Create recipe rating route
+    Args:
+        recipe_id(int) : id of recipe
+    """
+    if not recipe_service.get_recipe(recipe_id):
         abort(404)
 
     rating = request.form["rating"]
@@ -364,6 +359,11 @@ def create_rating(recipe_id):
 @require_login
 @require_csrf
 def edit_rating(rating_id):
+    """
+    Edit recipe rating route
+    Args:
+        rating_id(int) : id of recipe rating
+    """
     rating = recipe_service.get_rating_by_id(rating_id)
     if not rating:
         abort(404)

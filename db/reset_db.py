@@ -1,7 +1,11 @@
+"""Database reseting utility module"""
 from db.utils import get_connection
 
 
 def reset_database():
+    """
+    database reset function
+    """
     con = get_connection()
 
     try:

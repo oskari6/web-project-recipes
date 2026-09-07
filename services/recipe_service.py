@@ -1,6 +1,6 @@
-from db import utils as db_utils
+"""Recipe service functions"""
 
-# Recipes service functions
+from db import utils as db_utils
 
 def get_recipe(recipe_id):
     """
@@ -76,7 +76,6 @@ def get_recipes(page, page_size, user_id=None, query=None):
 
     return db_utils.query(sql, params)
 
-
 def create_recipe(
     title,
     description,
@@ -116,9 +115,16 @@ def create_recipe(
         preparation_time
     ], con)
 
-def update_recipe(recipe_id, title, description, food_type=None,
-                  dietary_requirements=None, servings=None,
-                  preparation_time=None, con=None):
+def update_recipe(
+    recipe_id,
+    title,
+    description,
+    food_type=None,
+    dietary_requirements=None,
+    servings=None,
+    preparation_time=None,
+    con=None
+    ):
     """
     Update a recipe.
 
@@ -206,7 +212,6 @@ def add_ingredient(recipe_id, ingredient, amount=None, unit=None, con=None):
         unit
     ], con)
 
-
 # Steps
 
 def get_recipe_steps(recipe_id):
@@ -225,7 +230,6 @@ def get_recipe_steps(recipe_id):
              ORDER BY step_number"""
 
     return db_utils.query(sql, [recipe_id])
-
 
 def add_step(recipe_id, step_number, instruction, con=None):
     """
@@ -249,7 +253,6 @@ def add_step(recipe_id, step_number, instruction, con=None):
         instruction
     ], con)
 
-
 # Images
 
 def get_images(recipe_id):
@@ -268,7 +271,6 @@ def get_images(recipe_id):
             """
 
     return db_utils.query(sql, [recipe_id])
-
 
 # Comments
 
@@ -291,7 +293,6 @@ def get_comment_by_id(comment_id):
     comments = db_utils.query(sql, [comment_id])
 
     return comments[0] if comments else None
-
 
 def get_comments(recipe_id):
     """
@@ -420,7 +421,6 @@ def get_ratings(recipe_id):
 
     return db_utils.query(sql, [recipe_id])
 
-
 def get_user_ratings(user_id):
     """
     Return all recipes rated by a user.
@@ -439,7 +439,6 @@ def get_user_ratings(user_id):
     """
 
     return db_utils.query(sql, [user_id])
-
 
 def get_average_rating(recipe_id):
     """
@@ -500,7 +499,6 @@ def update_rating(rating_id, value):
         rating_id
     ])
 
-
 def recipe_count(user_id=None, query=None):
     """
     Gets the count of recipes in the database
@@ -515,15 +513,14 @@ def recipe_count(user_id=None, query=None):
     params = []
 
     if user_id is not None:
-            sql += " WHERE creator_id = ?"
-            params.append(user_id)
+        sql += " WHERE creator_id = ?"
+        params.append(user_id)
 
     if query:
         sql += " WHERE title LIKE ? OR description LIKE ?"
         params.extend([f"%{query}%", f"%{query}%"])
 
     return db_utils.query(sql, params)[0][0]
-
 
 def remove_all_steps(recipe_id, con=None):
     """
@@ -539,7 +536,6 @@ def remove_all_steps(recipe_id, con=None):
 
     db_utils.execute(sql, [recipe_id], con)
 
-
 def remove_all_ingredients(recipe_id, con=None):
     """
     Removed all ingredients from a recipe
@@ -553,7 +549,6 @@ def remove_all_ingredients(recipe_id, con=None):
     """
 
     db_utils.execute(sql, [recipe_id], con)
-
 
 def remove_image(recipe_id, image_id, con):
     """
@@ -591,3 +586,65 @@ def add_image(recipe_id, file_name, con=None):
         recipe_id,
         file_name,
     ], con)
+
+
+def create_ingredients(
+    recipe_id,
+    ingredients,
+    amounts,
+    units,
+    con
+):
+    """
+    Create ingredients utility function
+    Args:
+        recipe_id(int) : id of recipe
+        ingredients(list) : ingredients
+        amounts(list) : amounts
+        units(list) : units
+        con(Connection) : connection object
+    """
+    remove_all_ingredients(recipe_id, con)
+    for ingredient, amount, unit in zip(
+            ingredients,
+            amounts,
+            units
+        ):
+        if not ingredient.strip():
+            continue
+
+        add_ingredient(
+            recipe_id,
+            ingredient,
+            amount,
+            unit,
+            con
+        )
+
+def create_recipe_steps(
+    recipe_id,
+    steps,
+    con
+):
+    """
+    Create steps utility function
+    Args:
+        recipe_id(int) : id of recipe
+        steps(list): list
+        con(Connection) : connection object
+    """
+    remove_all_steps(recipe_id, con)
+    step_number = 1
+
+    for instruction in steps:
+        if not instruction.strip():
+            continue
+
+        add_step(
+            recipe_id,
+            step_number,
+            instruction,
+            con
+        )
+
+        step_number += 1

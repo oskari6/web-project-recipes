@@ -1,15 +1,22 @@
+"""App's decorators"""
 from functools import wraps
-
-from flask import abort, request, session
 import secrets
 
+from flask import abort, request, session
+
 def get_csrf_token():
+    """
+    csrf utility
+    """
     if "csrf_token" not in session:
         session["csrf_token"] = secrets.token_hex(32)
 
     return session["csrf_token"]
 
 def require_csrf(func):
+    """
+    csrf decorator
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == "POST":
@@ -25,6 +32,9 @@ def require_csrf(func):
     return wrapper
 
 def require_login(func):
+    """
+    login check utility
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
         if "user_id" not in session:

@@ -1,19 +1,21 @@
+"""Auth routes"""
 import secrets
 import sqlite3
 
-from flask import abort, flash, redirect, request, session, Blueprint, render_template
-from flask import render_template
+from flask import abort, flash, redirect, request, session, Blueprint, render_template, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
 from routes.user_routes import save_profile_picture
 from services import user_service
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask import url_for
 
 bp = Blueprint("auth", __name__)
 
 @bp.route("/auth/register", methods=["POST", "GET"])
 def register():
+    """
+    Register route
+    """
     if request.method == "GET":
-        return render_template("users/user_form.html",user=None, filled={})
+        return render_template("users/user_form.html",user=None)
 
     username = request.form["username"].strip()
     password = request.form["password"]
@@ -27,8 +29,7 @@ def register():
         flash("Passwords did not match.")
         return render_template(
             "users/user_form.html",
-            user=None,
-            filled={"username": username}
+            user=None
         )
 
     existing_user = user_service.get_user_by_username(username)
@@ -37,8 +38,7 @@ def register():
         flash("Username is already reserved.")
         return render_template(
             "users/user_form.html",
-            user=None,
-            filled={"username": username}
+            user=None
         )
 
     filename = save_profile_picture(image)
@@ -55,37 +55,40 @@ def register():
 
     except sqlite3.IntegrityError:
         abort(403)
-            
 
 @bp.route("/auth/login", methods=["POST", "GET"])
 def login():
+    """
+    Login route
+    """
     if request.method == "GET":
         return render_template("auth/login.html")
 
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    username = request.form["username"]
+    password = request.form["password"]
 
-        user = user_service.get_user_by_username(username)
-        if user:
-            password_correct = check_password_hash(
-                user["password_hash"],
-                password
-            )
-            if not password_correct:
-                flash("Wrong username or password.")
-                return render_template("auth/login.html")
-            
-            session["user_id"] = user["id"]
-            session["username"] = user["username"]
-            session["csrf_token"] = secrets.token_hex(16)
-            return redirect(url_for("home"))
-        else:
+    user = user_service.get_user_by_username(username)
+    if user:
+        password_correct = check_password_hash(
+            user["password_hash"],
+            password
+        )
+        if not password_correct:
             flash("Wrong username or password.")
             return render_template("auth/login.html")
 
+        session["user_id"] = user["id"]
+        session["username"] = user["username"]
+        session["csrf_token"] = secrets.token_hex(16)
+        return redirect(url_for("home"))
+    flash("Wrong username or password.")
+    return render_template("auth/login.html")
+
 @bp.route("/auth/logout", methods=["GET", "POST"])
 def logout():
+    """
+    Logout route
+    """
     del session["user_id"]
     del session["username"]
     return redirect(url_for("home"))

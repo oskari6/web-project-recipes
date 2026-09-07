@@ -1,3 +1,4 @@
+"""Image handling utility functions"""
 from pathlib import Path
 from uuid import uuid4
 from flask import abort
@@ -6,6 +7,9 @@ from werkzeug.utils import secure_filename
 from utils.constants import ALLOWED_IMAGE_EXTENSIONS
 
 def save_profile_picture(image):
+    """
+    profile picture changing file handling utiltiy
+    """
     if not image or not image.filename:
         return None
 
