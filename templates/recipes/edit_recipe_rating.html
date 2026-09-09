@@ -1,12 +1,13 @@
-<a href="#edit-rating-{{ rating.id }}"  class="button button-alt">Change rating</a>
+<a href="#edit-rating-{{ user_rating.id }}" class="button button-alt">Change rating</a>
 
-<div id="edit-rating-{{ rating.id }}" class="modal">
+<div id="edit-rating-{{ user_rating.id }}" class="modal">
   <div class="modal-content">
    <form 
     action="{{ url_for('recipes.edit_rating', rating_id=user_rating.id) }}" 
     method="post"
-    class="flex-column">
-    <p>Edit rating</p>
+    class="flex-column"
+    style="width: 150px;">
+    <p>Change rating</p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <label for="edit-rating">Rating (1–5)</label>
     <input
@@ -19,13 +20,15 @@
       value="{{ user_rating.value }}"
     >
 
+    <div class="flex-center" style="gap: 2px">
+      <a href="#" class="button">
+        Cancel
+      </a>
       <button type="submit" class="button button-primary">
         Save
       </button>
+    </div>
 
-      <a href="#"  class="button">
-        Cancel
-      </a>
     </form>
   </div>
 </div>
