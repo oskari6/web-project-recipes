@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    profile_picture TEXT,
+    profile_picture_filename TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -90,3 +90,10 @@ ON recipe_ratings (recipe_id);
 
 CREATE INDEX IF NOT EXISTS idx_recipe_ratings_creator
 ON recipe_ratings (creator_id);
+
+CREATE INDEX IF NOT EXISTS idx_recipes_created
+ON recipes (created_at DESC, id DESC);
+CREATE INDEX IF NOT EXISTS idx_recipes_creator_created
+ON recipes (creator_id, created_at DESC, id DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_recipe_created
+ON recipe_comments (recipe_id, created_at DESC, id DESC);
