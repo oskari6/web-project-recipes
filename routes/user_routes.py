@@ -1,11 +1,13 @@
 """User routes"""
 import math
+import sqlite3
 from werkzeug.security import generate_password_hash
-from flask import abort,  flash, redirect, request, session, Blueprint, render_template, url_for
+from flask import abort, redirect, request, session, Blueprint, render_template, url_for
 from services import user_service
 from services import recipe_service
 from utils.decorators import require_csrf, require_login
-from utils.images import save_profile_picture
+from utils import validator
+from utils.images import save_profile_picture, remove_profile_file, remove_recipe_files
 
 bp = Blueprint("users", __name__)
 
@@ -54,6 +56,8 @@ def user(user_id, page):
     if not found_user:
         abort(404)
 
+    if page < 1 or page > page_count:
+        return redirect(url_for("users.user", user_id=user_id, page=max(1, min(page, page_count))))
     recipes = recipe_service.get_recipes(page, page_size, user_id)
     return render_template(
         "users/user.html",
@@ -75,7 +79,9 @@ def edit_user(user_id):
     """
     found_user = user_service.get_user(user_id)
 
-    if not found_user or found_user["id"] != session["user_id"]:
+    if not found_user:
+        abort(404)
+    if found_user["id"] != session["user_id"]:
         abort(403)
 
     if request.method == "GET":
@@ -84,20 +90,14 @@ def edit_user(user_id):
             user=found_user
         )
 
-    username = request.form["username"].strip()
-    password = request.form["password"]
-    password_confirm = request.form["passwordConfirm"]
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+    password_confirm = request.form.get("password_confirm", "")
     image = request.files.get("image")
 
-    if len(username) > 16:
-        abort(403)
-
-    if password != password_confirm:
-        flash("Passwords did not match.")
-        return render_template(
-            "users/user_form.html",
-            user=found_user
-        )
+    error = validator.validate_user(username, password, password_confirm, user_id)
+    if error:
+        return render_template("users/user_form.html", user=found_user, error=error), 400
 
     filename = save_profile_picture(image)
 
@@ -107,12 +107,21 @@ def edit_user(user_id):
         else user_service.get_user_password_hash(user_id)["password_hash"]
     )
 
-    user_service.update_user(
-        user_id,
-        username,
-        password_hash,
-        filename
-    )
+    try:
+        user_service.update_user(
+            user_id, username, password_hash, filename or found_user["profile_picture_filename"]
+        )
+    except sqlite3.IntegrityError:
+        remove_profile_file(filename)
+        return render_template(
+            "users/user_form.html", user=found_user, error="Username is already reserved."
+        ), 400
+    except Exception:
+        remove_profile_file(filename)
+        raise
+    if filename:
+        remove_profile_file(found_user["profile_picture_filename"])
+    session["username"] = username
 
     return redirect(
         url_for("users.user", user_id=user_id)
@@ -125,7 +134,13 @@ def remove_user():
     """
     Remove user route
     """
+    found_user = user_service.get_user(session["user_id"])
+    images = [(recipe["id"], recipe_service.get_images(recipe["id"]))
+              for recipe in user_service.get_user_recipes(session["user_id"])]
     user_service.delete_user(session["user_id"])
-    del session["user_id"]
-    del session["username"]
+    for recipe_id, recipe_images in images:
+        remove_recipe_files(recipe_id, [image["file_name"] for image in recipe_images])
+    if found_user:
+        remove_profile_file(found_user["profile_picture_filename"])
+    session.clear()
     return redirect(url_for("home"))

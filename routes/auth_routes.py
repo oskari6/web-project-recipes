@@ -2,47 +2,37 @@
 import secrets
 import sqlite3
 
-from flask import abort, flash, redirect, request, session, Blueprint, render_template, url_for
-from werkzeug.security import generate_password_hash, check_password_hash
-from routes.user_routes import save_profile_picture
+from flask import flash, redirect, request, session, Blueprint, render_template, url_for
+from werkzeug.security import generate_password_hash
 from services import user_service
+from utils.images import save_profile_picture, remove_profile_file
+from utils import validator
+from utils.decorators import require_csrf, require_login
 
 bp = Blueprint("auth", __name__)
 
 @bp.route("/auth/register", methods=["POST", "GET"])
+@require_csrf
 def register():
     """
     Register route
     """
     if request.method == "GET":
-        return render_template("users/user_form.html",user=None)
+        return render_template("users/user_form.html", user=None)
 
-    username = request.form["username"].strip()
-    password = request.form["password"]
-    password_confirm = request.form["passwordConfirm"]
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+    password_confirm = request.form.get("password_confirm", "")
     image = request.files.get("image")
 
-    if len(username) > 16:
-        abort(403)
-
-    if password != password_confirm:
-        flash("Passwords did not match.")
+    error = validator.validate_auth_register(username, password, password_confirm)
+    if error:
         return render_template(
             "users/user_form.html",
-            user=None
-        )
-
-    existing_user = user_service.get_user_by_username(username)
-
-    if existing_user:
-        flash("Username is already reserved.")
-        return render_template(
-            "users/user_form.html",
-            user=None
-        )
+            error=error
+        ), 400
 
     filename = save_profile_picture(image)
-
     try:
         user_service.create_user(
             username,
@@ -52,11 +42,15 @@ def register():
 
         flash("Registering account succeeded, you can now login.")
         return redirect(url_for("auth.login"))
-
     except sqlite3.IntegrityError:
-        abort(403)
+        remove_profile_file(filename)
+        return render_template("users/user_form.html", error="Username is already reserved."), 400
+    except Exception:
+        remove_profile_file(filename)
+        raise
 
 @bp.route("/auth/login", methods=["POST", "GET"])
+@require_csrf
 def login():
     """
     Login route
@@ -64,31 +58,29 @@ def login():
     if request.method == "GET":
         return render_template("auth/login.html")
 
-    username = request.form["username"]
-    password = request.form["password"]
+    username = request.form.get("username", "")
+    password = request.form.get("password", "")
+
+    error = validator.validate_auth_login(username, password)
+    if error:
+        return render_template(
+            "auth/login.html",
+            error=error
+        ), 400
 
     user = user_service.get_user_by_username(username)
-    if user:
-        password_correct = check_password_hash(
-            user["password_hash"],
-            password
-        )
-        if not password_correct:
-            flash("Wrong username or password.")
-            return render_template("auth/login.html")
+    session.clear()
+    session["user_id"] = user["id"]
+    session["username"] = username
+    session["csrf_token"] = secrets.token_hex(16)
+    return redirect(url_for("home"))
 
-        session["user_id"] = user["id"]
-        session["username"] = user["username"]
-        session["csrf_token"] = secrets.token_hex(16)
-        return redirect(url_for("home"))
-    flash("Wrong username or password.")
-    return render_template("auth/login.html")
-
-@bp.route("/auth/logout", methods=["GET", "POST"])
+@bp.route("/auth/logout", methods=["POST"])
+@require_csrf
+@require_login
 def logout():
     """
     Logout route
     """
-    del session["user_id"]
-    del session["username"]
+    session.clear()
     return redirect(url_for("home"))
