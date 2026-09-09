@@ -67,14 +67,6 @@
   color: #777;
 }
 
-.user-page {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 4rem 1rem;
-}
-
 .user-panel {
   width: 100%;
   max-width: 400px;

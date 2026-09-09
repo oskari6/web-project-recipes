@@ -77,8 +77,8 @@
 
             <div>
               {% if editing %}
-                <a style="background-color: var(--color-alt); text-decoration: none" href="{{ url_for('users.user', user_id=user.id) }}">
-                  <button type="button">Cancel</button>
+                <a class="button" href="{{ url_for('users.user', user_id=user.id) }}">
+                  Cancel
                 </a>
               {% endif %}
               <button style="background-color: var(--color-primary);" type="submit">

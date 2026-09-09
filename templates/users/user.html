@@ -50,12 +50,12 @@
 
     {% if user.id == session.user_id %}
       <div class="profile-actions">
-        <a
-          class="button"
-          href="{{ url_for('users.edit_user', user_id=user.id) }}"
-        >
-          Edit profile
-        </a>
+          <a
+            class="button button-alt"
+            href="{{ url_for('users.edit_user', user_id=user.id) }}"
+          >
+            Edit profile
+          </a>
       </div>
     {% endif %}
   </section>

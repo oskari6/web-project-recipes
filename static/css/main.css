@@ -138,6 +138,38 @@ select:disabled {
   cursor: not-allowed;
 }
 
+button,
+.button {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: buttonface;
+  color: var(--color-text);
+  text-decoration: none;
+  font: inherit;
+  line-height: normal;
+  cursor: pointer;
+}
+
+button:hover,
+.button:hover {
+  filter: brightness(0.9) !important;
+  font-weight: normal;
+}
+
+.button-danger {
+  background-color: var(--color-danger);
+}
+
+.button-alt {
+  background-color: var(--color-alt);
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+}
+
 /* Tables */
 table {
   border-collapse: collapse;
@@ -358,6 +390,25 @@ footer {
   color: inherit;
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal:target {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
 }
 
 @keyframes page-load {

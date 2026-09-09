@@ -76,7 +76,7 @@
                           max="5"
                           required
                         >
-                        <button style="background-color: var(--color-primary)" type="submit">Rate</button>
+                        <button class="button button-primary" type="submit">Rate</button>
                       </div>
                     </div>
 
@@ -141,11 +141,10 @@
     {% if recipe.creator_id == session.user_id %}
       <div class="recipe-actions">
         <a
-        style="text-decoration: none"
-          class="button"
+           class="button button-alt"
           href="{{ url_for('recipes.edit_recipe', recipe_id=recipe.id) }}"
         >
-          <button style="background-color: var(--color-alt)" type="button">Edit</button>
+          Edit
         </a>
         {% include "recipes/remove_recipe.html" %}
       </div>
@@ -281,7 +280,7 @@
           ></textarea>
         </label>
 
-        <button style="background-color: var(--color-primary)" type="submit">Send</button>
+        <button class="button button-primary" type="submit">Send</button>
       </form>
     {% endif %}
   </section>

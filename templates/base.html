@@ -16,7 +16,9 @@
       <img class="nav-logo" src="/static/images/icon.png" alt="Recipe App logo"/>
       <nav class="container">
         <a href="/">Home</a>
-        <a href="/recipes/create">Contribute</a>
+        {% if session.user_id %}
+          <a href="/recipes/create">Contribute</a>
+        {% endif %}
         <a href="/recipes/1">Recipes</a>
         <a href="/users/1">Users</a>
         {% if session.user_id %}

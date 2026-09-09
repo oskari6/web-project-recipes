@@ -109,7 +109,7 @@
           {% set ingredient = recipe_ingredients[i] if i < recipe_ingredients|length else none %}
 
           <div class="ingredient-row">
-            <label>Ingredient {{ i + 1 }}
+            <label>{{ i + 1 }}
             <input
               name="ingredient"
               value="{{ ingredient.ingredient if ingredient else '' }}"
@@ -117,7 +117,7 @@
             >
             </label>
 
-            <label>Amount {{ i + 1 }}
+            <label>{{ i + 1 }}
             <input
               name="ingredient_amount"
               value="{{ ingredient.amount if ingredient and ingredient.amount is not none else '' }}"
@@ -125,7 +125,7 @@
             >
             </label>
 
-            <label>Unit {{ i + 1 }}
+            <label>{{ i + 1 }}
             <select name="ingredient_unit">
               <option value="">Unit</option>
 
@@ -155,6 +155,8 @@
           <textarea
             id="step-{{ i }}"
             maxlength="5000"
+             cols="z20"
+              rows="8"
             name="recipe_step"
             placeholder="Describe this step"
           >{{ step.instruction if step else '' }}</textarea>
@@ -206,7 +208,7 @@
             <button type="button">Cancel</button>
           </a>
         {% endif %}
-        <button style="background-color: var(--color-primary)" type="submit">
+        <button class="button button-primary" type="submit">
           {{ "Save changes" if editing else "Create recipe" }}
         </button>
       </div>

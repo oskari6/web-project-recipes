@@ -56,20 +56,6 @@
   margin-bottom: 2rem;
 }
 
-.hero-button {
-  display: inline-block;
-  padding: 0.8rem 1.4rem;
-
-  background: #222;
-  color: var(--color-background);
-  text-decoration: none;
-  border-radius: 6px;
-}
-
-.hero-button:hover {
-  background: #444;
-}
-
 /* Images */
 
 .hero-images {

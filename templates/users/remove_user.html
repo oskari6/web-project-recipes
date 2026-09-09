@@ -1,13 +1,18 @@
-<button style="background-color: var(--color-danger)" type="button" onclick="removeUserModal.showModal()">
-  Remove profile
-</button>
+<a class="button button-danger" href="#remove-user">Remove profile</a>
 
-<dialog id="removeUserModal">
-  <form action="{{ url_for('users.remove_user') }}" method="post">
+<div id="remove-user" class="modal">
+  <div class="modal-content">
+    <form action="{{ url_for('users.remove_user') }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>Do you want to delete your user profile? All of the related resources will also be removed</p>
 
-    <button style="background-color: var(--color-danger)" type="submit">Confirm</button>
-    <button type="button" onclick="removeUserModal.close()">Cancel</button>
-  </form>
-</dialog>
+      <button type="submit"  class="button-danger">
+        Confirm
+      </button>
+
+        <a href="#" class="button">
+          Cancel
+        </a>
+    </form>
+  </div>
+</div>
