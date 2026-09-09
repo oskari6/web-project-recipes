@@ -4,14 +4,16 @@ import sqlite3
 from werkzeug.security import generate_password_hash
 from utils import constants
 
-DB_PATH = "db/database.db"
+DB_PATH = "database.db"
 
-USER_COUNT = 100
-RECIPE_COUNT = 1000
+USER_COUNT = 1000000
+RECIPE_COUNT = 1000000
+password_hash = generate_password_hash("password")
 
 db = sqlite3.connect(DB_PATH)
 db.execute("PRAGMA foreign_keys = ON")
-
+db.execute("PRAGMA journal_mode = WAL")
+db.execute("PRAGMA synchronous = OFF")
 
 # Clear old data
 
@@ -26,15 +28,16 @@ db.execute("DELETE FROM users")
 
 # Users
 
-for i in range(1, USER_COUNT + 1):
-    db.execute(
-        """INSERT INTO users (username, password_hash)
-           VALUES (?, ?)""",
-        [
-            f"user{i}",
-            generate_password_hash("password")
-        ]
-    )
+users = (
+    (f"user{i}", password_hash)
+    for i in range(1, USER_COUNT + 1)
+)
+
+db.executemany(
+    """INSERT INTO users (username, password_hash)
+       VALUES (?, ?)""",
+    users
+)
 
 for i in range(1, RECIPE_COUNT + 1):
     creator_id = random.randint(1, USER_COUNT)
@@ -44,7 +47,6 @@ for i in range(1, RECIPE_COUNT + 1):
               (title, description, creator_id, food_type,
                dietary_requirements, servings, preparation_time)
            VALUES (?, ?, ?, ?, ?, ?, ?)
-           RETURNING *
            """,
         [
             f"Recipe {i}",
@@ -62,7 +64,7 @@ for i in range(1, RECIPE_COUNT + 1):
 
     # Ingredients
 
-    ingredient_count = random.randint(3, 10)
+    ingredient_count = random.randint(1, 3)
 
     for j in range(1, ingredient_count + 1):
         db.execute(
@@ -80,7 +82,7 @@ for i in range(1, RECIPE_COUNT + 1):
 
     # Steps
 
-    step_count = random.randint(2, 8)
+    step_count = random.randint(1, 3)
 
     for j in range(1, step_count + 1):
         db.execute(
@@ -97,7 +99,7 @@ for i in range(1, RECIPE_COUNT + 1):
 
     # Images
 
-    image_count = random.randint(0, 3)
+    image_count = random.randint(0, 1)
 
     for j in range(1, image_count + 1):
         db.execute(
@@ -106,15 +108,14 @@ for i in range(1, RECIPE_COUNT + 1):
                VALUES (?, ?)""",
             [
                 recipe_id,
-                "placeholder.jpg",
-                j
+                "placeholder.jpg"
             ]
         )
 
 
     # Comments
 
-    comment_count = random.randint(0, 10)
+    comment_count = random.randint(0, 2)
 
     for j in range(comment_count):
         db.execute(
@@ -131,7 +132,7 @@ for i in range(1, RECIPE_COUNT + 1):
 
     # Ratings
 
-    rating_count = random.randint(0, min(20, USER_COUNT))
+    rating_count = random.randint(0, 3)
 
     # sample() prevents the same user rating a recipe twice
     rating_users = random.sample(
@@ -153,6 +154,7 @@ for i in range(1, RECIPE_COUNT + 1):
 
 
 db.commit()
+db.execute("PRAGMA synchronous = NORMAL")
 db.close()
 
 print(f"Created {USER_COUNT} users and {RECIPE_COUNT} recipes.")

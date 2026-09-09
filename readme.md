@@ -46,3 +46,13 @@ ongelmien tullessa: oskari.anton.sulkakoski@helsinki.fi
 lisäosat:
 SHIFT + CTRL + X → Find extensions
 Kirjoita hakukenttään @recommended ja asenna Workspace Recommendations -header osion lisäosat
+
+# Suorituskyky
+
+- 10^6 käyttäjää
+- 10^6 reseptiä
+
+käyttäjä ja resepti haku noin 1.5s
+
+käyttäjät ja reseptit sivut latautuu noin 1s
+käyttäjä ja resepti sivu latautuu noin 1s

@@ -7,4 +7,3 @@ __pycache__/
 static/uploads/*
 !static/uploads/recipes/
 static/uploads/recipes/*
-!static/uploads/recipes/seed_placeholder.jpg
