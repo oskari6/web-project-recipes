@@ -2,18 +2,17 @@
   Edit
 </button>
 
-<dialog id="editCommentModal">
+<dialog id="editCommentModal-{{ comment.id }}">
   <form 
     action="{{ url_for('recipes.edit_comment', comment_id=comment.id) }}" 
     method="post"
     class="flex-column">
     <p>Edit comment</p>
-    <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ session.csrf_token }}"
-    >
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <label for="comment-{{ comment.id }}">Comment</label>
     <textarea
+      id="comment-{{ comment.id }}"
+      maxlength="5000"
       name="comment"
       rows="3"
       required

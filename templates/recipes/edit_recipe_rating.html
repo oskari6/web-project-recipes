@@ -2,18 +2,16 @@
   Change rating
 </button>
 
-<dialog id="editRatingModal">
+<dialog id="editRatingModal-{{rating.id}}">
   <form 
     action="{{ url_for('recipes.edit_rating', rating_id=user_rating.id) }}" 
     method="post"
     class="flex-column">
     <p>Edit rating</p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <label for="edit-rating">Rating (1–5)</label>
     <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ session.csrf_token }}"
-    >
-    <input
+      id="edit-rating"
       name="rating"
       type="number"
       min="1"

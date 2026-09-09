@@ -81,6 +81,13 @@
   margin-bottom: 1.25rem;
 }
 
+.recipe-panel {
+  padding: 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
 .ingredient-list {
   display: flex;
   flex-direction: column;
