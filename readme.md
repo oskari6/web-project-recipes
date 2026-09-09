@@ -1,3 +1,5 @@
+![alt text]({5FC884BD-7B8C-4EC5-BAE9-9BBD871A8241}.png)
+
 # Ruokareseptit
 
 - Sovelluksessa käyttäjät pystyvät jakamaan ruokareseptejään. Reseptissä lukee tarvittavat ainekset ja valmistusohje.
