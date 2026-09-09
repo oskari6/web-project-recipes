@@ -5,11 +5,11 @@
 - Käyttäjä pystyy lisäämään reseptejä ja muokkaamaan ja poistamaan niitä.
 - Käyttäjä näkee sovellukseen lisätyt reseptit.
 - Käyttäjä pystyy etsimään reseptejä hakusanalla.
+- Käyttäjä pystyy etsimään käyttäjiä hakusanalla.
 - Käyttäjäsivu näyttää, montako reseptiä käyttäjä on lisännyt ja listan käyttäjän lisäämistä resepteistä.
 - Käyttäjä pystyy valitsemaan esimerkiksi seuraavia luokitteluja:
-- Ruoan tyyppi: alkuruoka, pääruoka tai jälkiruoka
-- Ruokavalio: laktoositon, gluteeniton tai vegaaninen
-- Käyttäjä pystyy antamaan reseptille kommentin ja arvosanan. Reseptistä näytetään kommentit ja keskimääräinen arvosana.
+- Ruoan tyyppi, ruokavalio, valmistusaika, reseptistä saatava annosten määrä, kuvat ja muut lisätiedot.
+- Käyttäjä pystyy antamaan reseptille kommentin ja arvosanan. Reseptistä näytetään kommentit ja keskimääräinen arvosana ja kaikki arvosanat.
 
 Tässä pääasiallinen tietokohde on ruokaresepti ja toissijainen tietokohde on kommentti reseptiin.
 
@@ -34,12 +34,15 @@ setup.sh - kehitysympäristön alustus ja tietokannan generointi
 
 # Kehitys
 
-starting application:
+sovelluksen käynnistys:
+(jos sinulta ei löydy jo make -pakettia, asenna se sudo apt install make -komennolla)
 make setup
 make dev
 tai vaihtoehtoisesti ilman debuggausta:
 make start
 
-extensions:
+ongelmien tullessa: oskari.anton.sulkakoski@helsinki.fi
+
+lisäosat:
 SHIFT + CTRL + X → Find extensions
-Type in searchfield @recommended and install Workspace Recommendations -header sections extensions
+Kirjoita hakukenttään @recommended ja asenna Workspace Recommendations -header osion lisäosat
