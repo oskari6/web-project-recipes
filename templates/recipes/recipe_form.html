@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% if recipe %}
+  {% set editing = true %}
+{% else %}
+  {% set editing = false %}
+{% endif %}
+
+{% block title %}
+  {{ "Edit recipe" if editing else "Create recipe" }} - Recipe App
+{% endblock %}
+
+{% block content %}
+<div style="padding: 1rem" class="container">
+  <section class="hero-wide" style="background-image: url('/static/images/hero5.jpg');">
+    <div class="hero-content">
+        <h1 style="padding: 1rem; color:white">{{ "Edit recipe" if editing else "Create a recipe" }}</h1>
+    </div>
+  </section>
+
+  <form
+    class="recipe-panel"
+    action="{{ '/recipes/edit/' ~ recipe.id if editing else '/recipes/create' }}"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+      <div class="flex-column">
+        <h2>Basic information</h2>
+          <label for="recipe-title">Title</label>
+          <input
+            required
+            id="recipe-title"
+            maxlength="200"
+            placeholder="title"
+            type="text"
+            name="title"
+            value="{{ values.get('title', '') or '' }}"
+          >
+
+          <label for="food_type">Food type</label>
+          <select id="food_type" name="food_type">
+            <option value="">Select food type</option>
+
+            {% for food_type in food_types %}
+              <option
+                value="{{ food_type }}"
+                {% if values.get('food_type') == food_type %}selected{% endif %}
+              >
+                {{ food_type }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <label for="dietary_requirements">Dietary requirement</label>
+          <select id="dietary_requirements" name="dietary_requirements">
+            <option value="">No dietary requirement</option>
+
+            {% for requirement in dietary_requirements %}
+              <option
+                value="{{ requirement }}"
+                {% if values.get('dietary_requirements') == requirement %}selected{% endif %}
+              >
+                {{ requirement }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <label for="servings">Servings</label>
+          <input
+            id="servings"
+            min="1"
+            step="1"
+            placeholder="Servings"
+            style="width: 100px;"
+            type="number"
+            name="servings"
+            value="{{ values.get('servings', '') or '' }}"
+          >
+
+          <label for="preparation_time">Preparation time (minutes)</label>
+          <input
+            id="preparation_time"
+            min="1"
+            step="1"
+            placeholder="Preparation time (min)"
+            style="width: 200px;"
+            type="number"
+            name="preparation_time"
+            value="{{ values.get('preparation_time', '') or '' }}"
+          >
+
+        <label class="flex-column">
+          Description:
+          <textarea required maxlength="10000" name="description">{{ values.get('description', '') or '' }}</textarea>
+        </label>
+    </div>
+
+    <div class="flex-column" style="padding-top: 1rem;">
+      <h2>Ingredients</h2>
+      <div style="padding: 1rem;">
+        <div class="ingredient-row">
+        <h5>Ingredient</h5>
+        <h5>Amount</h5>
+        <h5>Unit</h5>
+        </div>
+        {% for i in range(10) %}
+          {% set ingredient = recipe_ingredients[i] if i < recipe_ingredients|length else none %}
+
+          <div class="ingredient-row">
+            <label>{{ i + 1 }}
+            <input
+              name="ingredient"
+              value="{{ ingredient.ingredient if ingredient else '' }}"
+              placeholder="Ingredient"
+            >
+            </label>
+
+            <label>{{ i + 1 }}
+            <input
+              name="ingredient_amount"
+              value="{{ ingredient.amount if ingredient and ingredient.amount is not none else '' }}"
+              placeholder="Amount"
+            >
+            </label>
+
+            <label>{{ i + 1 }}
+            <select name="ingredient_unit">
+              <option value="">Unit</option>
+
+              {% for unit in units %}
+                <option
+                  value="{{ unit }}"
+                  {% if ingredient and ingredient.unit == unit %}selected{% endif %}
+                >
+                  {{ unit }}
+                </option>
+              {% endfor %}
+            </select>
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+
+  <div style="padding-top: 1rem">
+    <h2>Steps</h2>
+    <div style="padding: 1rem" class="flex-wrap">
+      {% for i in range(10) %}
+        {% set step = recipe_steps[i] if i < recipe_steps|length else none %}
+
+        <div class="step-row">
+          <label for="step-{{ i }}">Step {{ i + 1 }}</label>
+
+          <textarea
+            id="step-{{ i }}"
+            maxlength="5000"
+             cols="z20"
+              rows="8"
+            name="recipe_step"
+            placeholder="Describe this step"
+          >{{ step.instruction if step else '' }}</textarea>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+    <div>
+      <h2>Images</h2>
+      {% if editing %}
+        <div class="recipe-images">
+          {% for image in recipe_images %}
+            <div class="recipe-image">
+              <img
+                src="{{ url_for(
+                  'static',
+                  filename='uploads/recipes/' ~ recipe.id ~ '/' ~ image.file_name
+                ) }}"
+                alt="{{ recipe.title }}"
+              >
+
+              <label>
+                <input
+                  type="checkbox"
+                  name="remove_image"
+                  value="{{ image.id }}"
+                >
+                Remove
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <label style="padding: 1rem;">
+        Add images:
+        <input
+          type="file"
+          name="images"
+          accept=".jpg,.jpeg,.png"
+          multiple
+        >
+      </label>
+    </div>
+
+    <div style="padding-top: 1rem">
+        {% if editing %}
+          <a style="text-decoration: none" href="{{ url_for('recipes.recipe', recipe_id=recipe.id) }}">
+            <button type="button">Cancel</button>
+          </a>
+        {% endif %}
+        <button class="button button-primary" type="submit">
+          {{ "Save changes" if editing else "Create recipe" }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

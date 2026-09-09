@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Users - Recipe App{% endblock %}
+{% block content %}
+<section class="hero-wide" style="background-image: url('/static/images/hero10.jpg');">
+  <div class="hero-content">
+      <h1 style="padding: 1rem; color:white">Find other chefs</h1>
+  </div>
+</section>
+
+<div style="padding: 1rem;">
+    <form action="{{ url_for('users.users', page=1) }}" method="get">
+      <label>Search users
+        <input
+          type="text"
+          name="query"
+          placeholder="search users..."
+          value="{{ query }}"
+        >
+      </label>
+
+      <button type="submit">Search</button>
+    </form>
+  <div class="user-list">
+  {% for user in users %}
+    <div class="user-card">
+      {% if user.profile_picture_filename %}
+          <img
+            class="user-avatar"
+            src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
+            alt="{{ user.username }}"
+          >
+        {% else %}
+          <div class="user-avatar user-avatar-placeholder">
+            {{ user.username[0] | upper }}
+          </div>
+        {% endif %}
+
+        <div class="user-info">
+          <strong class="user-name"><a href="/users/user/{{ user.id }}">{{ user.username }}</a></strong>
+
+          <span class="user-meta">
+            Joined {{ user.created_at | datetime }}
+          </span>
+        </div>
+
+        <div class="user-recipes">
+          <strong>{{ user.recipe_count }}</strong>
+          <span>recipes</span>
+        </div>
+    </div>
+  {% else %}
+    <p>No users found.</p>
+  {% endfor %}
+  </div>
+</div>
+
+  <nav class="pagination" aria-label="Users pages">
+    {% if page > 1 %}
+      <a href="{{ url_for('users.users', page=page-1, query=query) }}">Previous</a>
+    {% endif %}
+    <span>Page {{ page }} of {{ page_count }}</span>
+    {% if page < page_count %}
+      <a href="{{ url_for('users.users', page=page+1, query=query) }}">Next</a>
+    {% endif %}
+  </nav>
+{% endblock %}

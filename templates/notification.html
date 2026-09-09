@@ -1,0 +1,23 @@
+{% if error %}
+  <div class="notification notification-error" role="alert">
+    <span>{{ error }}</span>
+    <button type="button"
+            class="notification-close"
+            onclick="this.parentElement.remove()">
+      &times;
+    </button>
+  </div>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="notification notification-{{ category }}">
+      <span>{{ message }}</span>
+      <button type="button"
+              class="notification-close"
+              onclick="this.parentElement.remove()">
+        &times;
+      </button>
+    </div>
+  {% endfor %}
+{% endwith %}

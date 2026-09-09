@@ -1,0 +1,21 @@
+{
+  "files.associations": {
+    "*.html": "jinja-html"
+  },
+"[jinja-html]": {
+    "editor.formatOnSave": false
+  },
+
+  "editor.formatOnSave": true,
+    "files.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/.git": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/*.db": true
+  },
+  "python.analysis.extraPaths": ["."]
+}

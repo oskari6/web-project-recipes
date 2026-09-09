@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% if user %}
+  {% set editing = true %}
+{% else %}
+  {% set editing = false %}
+{% endif %}
+{% block title %}{{ "Edit profile" if editing else "Register" }} - Recipe App{% endblock %}
+{% block content %}
+<section class="hero-wide" style="background-image: url('/static/images/hero11.jpg');">
+    <div class="hero-content">
+      <div class="user-page">
+        <div class="user-panel">
+          <h1>
+            {{ "Edit profile" if editing else "Register account" }}
+          </h1>
+          <form
+            action="{{ url_for('users.edit_user', user_id=user.id) if editing else url_for('auth.register') }}"
+            method="post"
+            enctype="multipart/form-data"
+            class="flex-column"
+          >
+          <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+            {% if editing and user.profile_picture_filename %}
+              <div class="profile-picture-preview">
+                <img
+                  src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
+                  alt="{{ user.username }}'s profile picture"
+                >
+              </div>
+            {% endif %}
+
+            <label>
+              Profile picture (optional):
+              <input
+                type="file"
+                name="image"
+                accept=".jpg,.jpeg,.png"
+              >
+            </label>
+
+            <label>
+              Username:
+              <input
+                type="text"
+                name="username"
+                value="{{ request.form.get('username', user.username if editing else '') }}"
+                maxlength="16"
+                required
+              >
+            </label>
+
+            <label>
+              {{ "New password:" if editing else "Password:" }}
+
+              <input
+                type="password"
+                name="password"
+                maxlength="64"
+                {% if not editing %}required{% endif %}
+              >
+            </label>
+
+            {% if editing %}
+              <small>Leave blank to keep your current password.</small>
+            {% endif %}
+
+            <label>
+              Password confirmation:
+              <input
+                type="password"
+                name="password_confirm"
+                maxlength="64"
+                {% if not editing %}required{% endif %}
+              >
+            </label>
+
+            <div>
+              {% if editing %}
+                <a class="button" href="{{ url_for('users.user', user_id=user.id) }}">
+                  Cancel
+                </a>
+              {% endif %}
+              <button style="background-color: var(--color-primary);" type="submit">
+                {{ "Save changes" if editing else "Register" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>    
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,30 @@
+<a href="#edit-comment-{{ comment.id }}" class="button button-alt">Edit</a>
+
+<div id="edit-comment-{{ comment.id }}" class="modal">
+  <div class="modal-content">
+    <form 
+    action="{{ url_for('recipes.edit_comment', comment_id=comment.id) }}" 
+    method="post"
+    class="flex-column">
+    <p>Edit comment</p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <label for="comment-{{ comment.id }}">Comment</label>
+    <textarea
+      id="comment-{{ comment.id }}"
+      maxlength="5000"
+      name="comment"
+      rows="3"
+      required
+      style="min-width: 500px"
+    >{{ comment.value }}</textarea>
+
+      <button type="submit" class="button button-primary">
+        Save
+      </button>
+
+      <a href="#" class="button">
+        Cancel
+      </a>
+    </form>
+  </div>
+</div>

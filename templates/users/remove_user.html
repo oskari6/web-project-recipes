@@ -1,0 +1,18 @@
+<a class="button button-danger" style="text-align: center" href="#remove-user">Remove profile</a>
+
+<div id="remove-user" class="modal">
+  <div class="modal-content">
+    <form action="{{ url_for('users.remove_user') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <p>Do you want to delete your user profile? All of the related resources will also be removed</p>
+
+      <button type="submit" class="button-danger">
+        Confirm
+      </button>
+
+        <a href="#" class="button">
+          Cancel
+        </a>
+    </form>
+  </div>
+</div>

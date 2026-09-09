@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block title %}Recipe - {{ recipe.title }} - Recipe App{% endblock %}
+{% block content %}
+<section class="hero-wide" style="background-image: url('/static/images/hero9.jpg');">
+</section>
+  
+<div class="recipe-page">
+ <section class="recipe-header-card">
+    <div class="recipe-heading">
+      <div class="container flex-between">
+        <div class="flex-center" style="gap:1rem"> 
+          <div>
+            {% if user.profile_picture_filename %}
+            <img
+              class="profile-picture"
+              src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
+              alt="{{ user.username }}'s profile picture"
+            >
+            {% else %}
+              <div class="profile-picture profile-picture-placeholder">
+                {{ user.username[0] | upper }}
+              </div>
+            {% endif %}
+          </div>
+          <div>
+            <h1>{{ recipe.title }}</h1>
+            <a style="text-decoration: none" href="{{ url_for('users.user', user_id=recipe.creator_id) }}">
+              By <span style="font-weight: bold; color: var(--color-text-muted)">@{{ recipe.creator_username }}</span>
+            </a>
+            <div class="recipe-dates">
+              <span>Created {{ recipe.created_at | datetime }}</span>
+
+              {% if recipe.updated_at %}
+                <span>Updated {{ recipe.updated_at }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <h4>Average Rating</h4>
+            {% if avg_rating and avg_rating.average_rating %}
+              <div class="recipe-rating">
+                <strong>{{ "%.1f"|format(avg_rating.average_rating) }}</strong>
+                <span>/ 5</span>
+              </div>
+            {% else %}
+              <span>No rating yet</span>
+            {% endif %}
+            </div>
+
+            <div>
+              {% if session.user_id and session.user_id != recipe.creator_id %}
+                {% if user_rating %}
+                  <h4>
+                    Your rating:
+                    <strong>{{ user_rating.value }} / 5</strong>
+                  </h4>
+
+                  {% include "recipes/edit_recipe_rating.html" %}
+                {% else %}
+                  <form
+                    action="/recipes/create/rating/{{ recipe.id }}"
+                    method="post"
+                    class="rating-form flex-center"
+                  >
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <div class="flex-column" style="gap: 0">
+                      <label for="new-rating">Your rating</label>
+                      <div class="flex-center" style="gap: 5px">
+                        <input
+                          id="new-rating"
+                          name="rating"
+                          type="number"
+                          min="1"
+                          max="5"
+                          required
+                        >
+                        <button class="button button-primary" type="submit">Rate</button>
+                      </div>
+                    </div>
+
+                    
+                  </form>
+                {% endif %}
+              {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="recipe-description" style="margin-top: 1rem; background-color: var(--color-surface); padding: 1rem; ">
+        <h4>About the recipe</h4>
+        {{ recipe.description | show_lines }}
+      </div>
+
+      <div class="recipe-meta">
+        {% if recipe.food_type %}
+          <div>
+            <span>Food type</span>
+            <strong>{{ recipe.food_type }}</strong>
+          </div>
+        {% endif %}
+
+        {% if recipe.dietary_requirements %}
+          <div>
+            <span>Diet</span>
+            <strong>{{ recipe.dietary_requirements }}</strong>
+          </div>
+        {% endif %}
+
+        {% if recipe.servings %}
+          <div>
+            <span>Servings</span>
+            <strong>{{ recipe.servings }}</strong>
+          </div>
+        {% endif %}
+
+        {% if recipe.preparation_time %}
+          <div>
+            <span>Preparation</span>
+            <strong>{{ recipe.preparation_time }} min</strong>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if images %}
+      <div class="recipe-images">
+          {% for image in images %}
+            <img
+              src="{{ url_for(
+                'static',
+                filename='uploads/recipes/' ~ recipe.id ~ '/' ~ image.file_name
+              ) }}"
+              alt="{{ recipe.title }}"
+            >
+          {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if recipe.creator_id == session.user_id %}
+      <div class="recipe-actions">
+        <a
+           class="button button-alt"
+          href="{{ url_for('recipes.edit_recipe', recipe_id=recipe.id) }}"
+        >
+          Edit
+        </a>
+        {% include "recipes/remove_recipe.html" %}
+      </div>
+    {% endif %}
+  </section>
+
+
+  <div class="recipe-content">
+
+    <section class="recipe-section">
+      <h2>Ingredients</h2>
+
+      <div class="ingredient-list">
+        {% for ingredient in ingredients %}
+          <div class="ingredient-row">
+            <span>{{ ingredient.ingredient | show_lines }}</span>
+
+            <span>
+              {% if ingredient.amount %}
+                {{ ingredient.amount }}
+              {% endif %}
+
+              {% if ingredient.unit %}
+                {{ ingredient.unit }}
+              {% endif %}
+            </span>
+          </div>
+        {% else %}
+          <p>No ingredients provided.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="recipe-section">
+      <h2>Instructions</h2>
+
+      <div class="step-list">
+        {% for step in recipe_steps %}
+          <div class="recipe-step">
+            <div class="step-number">
+              {{ step.step_number }}
+            </div>
+
+            <p class="container" style="border-radius: 10px; background-color: var(--color-surface); padding: 10px">{{ step.instruction | show_lines }}</p>
+          </div>
+        {% else %}
+          <p>No instructions provided.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <section class="recipe-section" id="ratings">
+    <h3>All ratings</h3>
+
+    {% for rating in ratings %}
+      <div>
+        <a href="{{ url_for('users.user', user_id=rating.creator_id) }}">
+          @{{ rating.creator_username }}
+        </a>
+        <span>Rated this recipe a {{ rating.value }} / 5</span>
+      </div>
+    {% else %}
+      <p>No ratings yet.</p>
+    {% endfor %}
+    <nav class="pagination" aria-label="Rating pages">
+      {% if rating_page > 1 %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            rating_page=rating_page-1, comment_page=comment_page, _anchor='ratings') }}">Previous</a>
+      {% endif %}
+      <span>Page {{ rating_page }} of {{ rating_pages }}</span>
+      {% if rating_page < rating_pages %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            rating_page=rating_page+1, comment_page=comment_page, _anchor='ratings') }}">Next</a>
+      {% endif %}
+    </nav>
+
+  </section>
+
+  <section class="recipe-section" id="comments">
+    <h2>Comments</h2>
+
+    <div class="comment-list">
+      {% for comment in comments %}
+        <div class="comment">
+          <div class="comment-header">
+            <strong>@{{ comment.creator_username }}</strong>
+            <span>{{ comment.created_at | datetime }}</span>
+          </div>
+          <div class="flex-center" style="justify-content: space-between">
+            <p>{{ comment.value | show_lines }}</p>
+            {% if session.user_id and session.user_id == comment.creator_id %}
+              <div>
+                {% include "recipes/edit_recipe_comment.html" %}
+                {% include "recipes/remove_recipe_comment.html" %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        <p>No comments yet.</p>
+      {% endfor %}
+    </div>
+
+
+    <nav class="pagination" aria-label="Comment pages">
+      {% if comment_page > 1 %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            comment_page=comment_page-1, rating_page=rating_page, _anchor='comments') }}">Previous</a>
+      {% endif %}
+      <span>Page {{ comment_page }} of {{ comment_pages }}</span>
+      {% if comment_page < comment_pages %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            comment_page=comment_page+1, rating_page=rating_page, _anchor='comments') }}">Next</a>
+      {% endif %}
+    </nav>
+
+    {% if session.user_id %}
+      <form
+        action="/recipes/create/comment/{{ recipe.id }}"
+        method="post"
+        class="comment-form"
+      >
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+        <label>
+          Add a comment
+          <textarea
+            maxlength="5000"
+            name="comment"
+            rows="3"
+            required
+          ></textarea>
+        </label>
+
+        <button class="button button-primary" type="submit">Send</button>
+      </form>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

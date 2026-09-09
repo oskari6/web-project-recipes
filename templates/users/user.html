@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}User - {{ user.username }} - Recipe App{% endblock %}
+{% block content %}
+<section class="hero-wide" style="background-image: url('/static/images/hero7.jpg');">
+  <div class="hero-content">
+      <h1 style="padding: 1rem; color:white">{{user.username}}'s profile</h1>
+  </div>
+</section>
+
+<div class="user-page">
+  <section class="profile-card">
+    <div class="profile-header">
+      {% if user.profile_picture_filename %}
+        <img
+          class="profile-picture"
+          src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
+          alt="{{ user.username }}'s profile picture"
+        >
+      {% else %}
+        <div class="profile-picture profile-picture-placeholder">
+          {{ user.username[0] | upper }}
+        </div>
+      {% endif %}
+
+      <div class="profile-info">
+        <h1>{{ user.username }}</h1>
+
+        <div class="profile-stats">
+          <span>
+            <strong>{{ recipe_count }}</strong> recipes
+          </span>
+
+          <span>
+            Joined {{ user.created_at | datetime }}
+          </span>
+
+          {% if user.latest_recipe_at %}
+            <span>
+              Latest recipe {{ user.latest_recipe_at }}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+      {% if user.id == session.user_id %}
+        <div style="margin-left: auto">
+          {% include "users/remove_user.html" %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if user.id == session.user_id %}
+      <div class="profile-actions">
+          <a
+            class="button button-alt"
+            href="{{ url_for('users.edit_user', user_id=user.id) }}"
+          >
+            Edit profile
+          </a>
+      </div>
+    {% endif %}
+  </section>
+
+
+  <section class="user-recipes-section">
+    <div class="section-header">
+      <h2>Recipes</h2>
+      <span>{{ recipe_count }} total</span>
+    </div>
+
+    <div class="recipe-list">
+      {% for recipe in recipes %}
+        <article class="recipe-card">
+          <div class="recipe-card-header">
+            <div>
+              <a
+                class="recipe-title"
+                href="{{ url_for('recipes.recipe', recipe_id=recipe.id) }}"
+              >
+                {{ recipe.title }}
+              </a>
+
+              <span class="recipe-date">
+                {{ recipe.created_at | datetime }}
+              </span>
+            </div>
+          </div>
+
+          <p class="recipe-description">
+            {{ recipe.description | show_lines }}
+          </p>
+
+          <div class="recipe-details">
+            {% if recipe.food_type %}
+              <span class="recipe-type">
+                {{ recipe.food_type }}
+              </span>
+            {% endif %}
+
+            {% if recipe.preparation_time %}
+              <span>{{ recipe.preparation_time }} min</span>
+            {% endif %}
+
+            {% if recipe.servings %}
+              <span>{{ recipe.servings }} servings</span>
+            {% endif %}
+          </div>
+        </article>
+      {% else %}
+        <div class="empty-state">
+          <h3>No recipes yet</h3>
+          <p>This user hasn't created any recipes.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if page_count > 1 %}
+      <nav class="pagination">
+        {% if page > 1 %}
+          <a href="{{ url_for('users.user', user_id=user.id, page=page-1) }}">
+            Previous
+          </a>
+        {% endif %}
+
+        <span>Page {{ page }} of {{ page_count }}</span>
+
+        {% if page < page_count %}
+          <a href="{{ url_for('users.user', user_id=user.id, page=page+1) }}">
+            Next
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

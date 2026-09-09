@@ -1,0 +1,13 @@
+<button class="button" type="button" onclick="logoutModal.showModal()">
+  Logout
+</button>
+
+<dialog id="logoutModal">
+  <form action="{{ url_for('auth.logout') }}" method="post">
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <p>Do you want to logout?</p>
+
+    <button class="button button-danger" type="submit">Confirm</button>
+    <button type="button" onclick="logoutModal.close()">Cancel</button>
+  </form>
+</dialog>
