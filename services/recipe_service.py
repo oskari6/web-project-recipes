@@ -66,7 +66,7 @@ def get_recipes(page, page_size, user_id=None, query=None):
             sql += " WHERE r.title LIKE ? OR r.description LIKE ?"
         params.extend([f"%{query}%", f"%{query}%"])
 
-    sql += """ ORDER BY r.created_at DESC
+    sql += """ ORDER BY r.created_at DESC, r.id DESC
               LIMIT ? OFFSET ?"""
 
     limit = page_size
@@ -294,9 +294,9 @@ def get_comment_by_id(comment_id):
 
     return comments[0] if comments else None
 
-def get_comments(recipe_id):
+def get_comments(recipe_id, page=1, page_size=10):
     """
-    Return all comments belonging to a recipe.
+    Return one page of comments, newest first.
 
     Args:
         recipe_id (int): The ID of the recipe.
@@ -310,9 +310,10 @@ def get_comments(recipe_id):
              FROM recipe_comments c
              JOIN users u ON u.id = c.creator_id
              WHERE c.recipe_id = ?
-             ORDER BY c.created_at DESC"""
+             ORDER BY c.created_at DESC, c.id DESC
+             LIMIT ? OFFSET ?"""
 
-    return db_utils.query(sql, [recipe_id])
+    return db_utils.query(sql, [recipe_id, page_size, (page - 1) * page_size])
 
 def add_comment(recipe_id, creator_id, value):
     """
@@ -345,7 +346,7 @@ def update_comment(comment_id, value):
         value (str): The new comment text.
     """
     sql = """UPDATE recipe_comments
-             SET value = ?, updated_at = CURRENT_TIMESTAMP
+             SET value = ?
              WHERE id = ?"""
 
     db_utils.execute(sql, [value, comment_id])
@@ -375,7 +376,7 @@ def get_rating(recipe_id, user_id):
     Returns:
         sqlite3.Row | None: The rating if one exists, otherwise None.
     """
-    sql = """SELECT id, value, recipe_id
+    sql = """SELECT id, value, recipe_id, creator_id
              FROM recipe_ratings
              WHERE recipe_id = ? AND creator_id = ?"""
 
@@ -393,7 +394,7 @@ def get_rating_by_id(rating_id):
     Returns:
         sqlite3.Row | None: The rating if one exists, otherwise None.
     """
-    sql = """SELECT id, value, recipe_id
+    sql = """SELECT id, value, recipe_id, creator_id
              FROM recipe_ratings
              WHERE id = ?"""
 
@@ -401,9 +402,9 @@ def get_rating_by_id(rating_id):
 
     return result[0] if result else None
 
-def get_ratings(recipe_id):
+def get_ratings(recipe_id, page=1, page_size=10):
     """
-    Return all ratings for a recipe.
+    Return one page of ratings, newest first.
     Args:
         recipe_id (int): The ID of the recipe.
     """
@@ -417,9 +418,10 @@ def get_ratings(recipe_id):
         JOIN users u ON u.id = rr.creator_id
         WHERE rr.recipe_id = ?
         ORDER BY rr.id DESC
+        LIMIT ? OFFSET ?
     """
 
-    return db_utils.query(sql, [recipe_id])
+    return db_utils.query(sql, [recipe_id, page_size, (page - 1) * page_size])
 
 def get_user_ratings(user_id):
     """
@@ -517,7 +519,8 @@ def recipe_count(user_id=None, query=None):
         params.append(user_id)
 
     if query:
-        sql += " WHERE title LIKE ? OR description LIKE ?"
+        sql += " AND" if user_id is not None else " WHERE"
+        sql += " (title LIKE ? OR description LIKE ?)"
         params.extend([f"%{query}%", f"%{query}%"])
 
     return db_utils.query(sql, params)[0][0]
@@ -562,7 +565,6 @@ def remove_image(recipe_id, image_id, con):
     sql = """
         DELETE FROM recipe_images
         WHERE id = ? AND recipe_id = ?
-        RETURNING file_name
     """
 
     db_utils.execute(sql, [image_id, recipe_id], con)
@@ -615,9 +617,9 @@ def create_ingredients(
 
         add_ingredient(
             recipe_id,
-            ingredient,
-            amount,
-            unit,
+            ingredient.strip(),
+            float(amount) if amount.strip() else None,
+            unit or None,
             con
         )
 
@@ -643,8 +645,20 @@ def create_recipe_steps(
         add_step(
             recipe_id,
             step_number,
-            instruction,
+            instruction.strip(),
             con
         )
 
         step_number += 1
+
+
+def comment_count(recipe_id):
+    """Count comments without loading their bodies.
+    Args:
+        recipe_id(int): id of recipe
+    Returns:
+        result(int) : count of comments
+    """
+    return db_utils.query(
+        "SELECT COUNT(*) FROM recipe_comments WHERE recipe_id = ?", [recipe_id]
+    )[0][0]

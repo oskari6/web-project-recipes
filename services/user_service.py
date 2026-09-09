@@ -11,8 +11,9 @@ def get_user(user_id):
     """
     sql = """SELECT id,
         username,
-        profile_picture,
-        created_at
+        profile_picture_filename,
+        created_at,
+        (SELECT MAX(created_at) FROM recipes WHERE creator_id = users.id) AS latest_recipe_at
              FROM users
              WHERE id = ?"""
     result = db_utils.query(sql, [user_id])
@@ -49,11 +50,10 @@ def get_users(page, page_size, query=None):
             u.id,
             u.username,
             u.created_at,
-            u.profile_picture,
+            u.profile_picture_filename,
             COUNT(r.id) AS recipe_count
         FROM users u
         LEFT JOIN recipes r ON r.creator_id = u.id
-        GROUP BY u.id
     """
     params = []
 
@@ -62,6 +62,7 @@ def get_users(page, page_size, query=None):
         params.append(f"%{query}%")
 
     sql += """
+        GROUP BY u.id
         ORDER BY username
         LIMIT ? OFFSET ?
     """
@@ -86,7 +87,7 @@ def get_user_by_username(username):
     sql = """SELECT id,
         username,
         password_hash,
-        profile_picture,
+        profile_picture_filename,
         created_at
         FROM users
         WHERE username = ?"""
@@ -106,7 +107,7 @@ def create_user(username, password_hash, filename=None):
     Returns:
         int: The ID of the created user.
     """
-    sql = """INSERT INTO users (username, password_hash, profile_picture)
+    sql = """INSERT INTO users (username, password_hash, profile_picture_filename)
              VALUES (?, ?, ?)"""
 
     return db_utils.execute(sql, [username, password_hash, filename])
@@ -124,7 +125,7 @@ def update_user(user_id, username, password_hash, profile_pic_filename):
     sql = """UPDATE users
              SET username = ?,
                 password_hash = ?,
-                profile_picture = ?
+                profile_picture_filename = ?
              WHERE id = ?"""
 
     db_utils.execute(sql, [username, password_hash, profile_pic_filename, user_id])
@@ -137,7 +138,7 @@ def remove_profile_picture(user_id):
         user_id (int): The ID of the user.
     """
     sql = """UPDATE users
-             SET profile_picture = NULL
+             SET profile_picture_filename = NULL
              WHERE id = ?"""
 
     db_utils.execute(sql, [user_id])
