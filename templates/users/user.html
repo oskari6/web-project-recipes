@@ -10,10 +10,10 @@
 <div class="user-page">
   <section class="profile-card">
     <div class="profile-header">
-      {% if user.profile_picture %}
+      {% if user.profile_picture_filename %}
         <img
           class="profile-picture"
-          src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture) }}"
+          src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
           alt="{{ user.username }}'s profile picture"
         >
       {% else %}
@@ -31,12 +31,12 @@
           </span>
 
           <span>
-            Joined {{ user.created_at }}
+            Joined {{ user.created_at | datetime }}
           </span>
 
-          {% if recipes %}
+          {% if user.latest_recipe_at %}
             <span>
-              Latest recipe {{ recipes[0].created_at }}
+              Latest recipe {{ user.latest_recipe_at }}
             </span>
           {% endif %}
         </div>
@@ -80,13 +80,13 @@
               </a>
 
               <span class="recipe-date">
-                {{ recipe.created_at }}
+                {{ recipe.created_at | datetime }}
               </span>
             </div>
           </div>
 
           <p class="recipe-description">
-            {{ recipe.description }}
+            {{ recipe.description | show_lines }}
           </p>
 
           <div class="recipe-details">

@@ -10,7 +10,7 @@
 
 <div style="padding: 1rem;">
   <form action="{{ url_for('recipes.recipes', page=1) }}" method="get">
-    <label>
+    <label>Search recipes
       <input
         type="text"
         name="query"
@@ -46,7 +46,7 @@
           </h2>
 
           <p class="recipe-card-description">
-            {{ recipe.description }}
+            {{ recipe.description | show_lines }}
           </p>
 
           <div class="recipe-card-details">
@@ -80,8 +80,8 @@
               </a>
             </span>
 
-            <span>Created {{ recipe.created_at }}</span>
-            <span>Updated {{ recipe.updated_at }}</span>
+            <span>Created {{ recipe.created_at | datetime }}</span>
+            <span>Updated {{ recipe.updated_at | datetime }}</span>
           </div>
         </div>
 
@@ -91,4 +91,14 @@
     {% endfor %}
   </div>
 </div>
+
+  <nav class="pagination" aria-label="Recipes pages">
+    {% if page > 1 %}
+      <a href="{{ url_for('recipes.recipes', page=page-1, query=query) }}">Previous</a>
+    {% endif %}
+    <span>Page {{ page }} of {{ page_count }}</span>
+    {% if page < page_count %}
+      <a href="{{ url_for('recipes.recipes', page=page+1, query=query) }}">Next</a>
+    {% endif %}
+  </nav>
 {% endblock %}

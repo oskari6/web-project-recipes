@@ -13,7 +13,7 @@
 
   <body>
     <header>
-      <img class="nav-logo" src="/static/images/icon.png"/>
+      <img class="nav-logo" src="/static/images/icon.png" alt="Recipe App logo"/>
       <nav class="container">
         <a href="/">Home</a>
         <a href="/recipes/create">Contribute</a>
@@ -29,6 +29,8 @@
       </nav>
         <h1 style="margin-left: auto; white-space: nowrap;">Recipe App</h1>
     </header>
+
+    {% include "notification.html" %}
 
     <main class="container">
       {% block content %}{% endblock %}
