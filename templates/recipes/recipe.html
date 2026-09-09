@@ -10,10 +10,10 @@
       <div class="container flex-between">
         <div class="flex-center" style="gap:1rem"> 
           <div>
-            {% if user.profile_picture %}
+            {% if user.profile_picture_filename %}
             <img
               class="profile-picture"
-              src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture) }}"
+              src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
               alt="{{ user.username }}'s profile picture"
             >
             {% else %}
@@ -28,7 +28,7 @@
               By <span style="font-weight: bold; color: var(--color-text-muted)">@{{ recipe.creator_username }}</span>
             </a>
             <div class="recipe-dates">
-              <span>Created {{ recipe.created_at }}</span>
+              <span>Created {{ recipe.created_at | datetime }}</span>
 
               {% if recipe.updated_at %}
                 <span>Updated {{ recipe.updated_at }}</span>
@@ -58,22 +58,18 @@
                   </h4>
 
                   {% include "recipes/edit_recipe_rating.html" %}
-                  </form>
                 {% else %}
                   <form
                     action="/recipes/create/rating/{{ recipe.id }}"
                     method="post"
                     class="rating-form flex-center"
                   >
-                    <input
-                      type="hidden"
-                      name="csrf_token"
-                      value="{{ session.csrf_token }}"
-                    >
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <div class="flex-column" style="gap: 0">
-                      <h4>Your rating</h4>
+                      <label for="new-rating">Your rating</label>
                       <div class="flex-center" style="gap: 5px">
                         <input
+                          id="new-rating"
                           name="rating"
                           type="number"
                           min="1"
@@ -95,7 +91,7 @@
 
       <div class="recipe-description" style="margin-top: 1rem; background-color: var(--color-surface); padding: 1rem; ">
         <h4>About the recipe</h4>
-        {{ recipe.description }}
+        {{ recipe.description | show_lines }}
       </div>
 
       <div class="recipe-meta">
@@ -165,7 +161,7 @@
       <div class="ingredient-list">
         {% for ingredient in ingredients %}
           <div class="ingredient-row">
-            <span>{{ ingredient.ingredient }}</span>
+            <span>{{ ingredient.ingredient | show_lines }}</span>
 
             <span>
               {% if ingredient.amount %}
@@ -193,7 +189,7 @@
               {{ step.step_number }}
             </div>
 
-            <p class="container" style="border-radius: 10px; background-color: var(--color-surface); padding: 10px">{{ step.instruction }}</p>
+            <p class="container" style="border-radius: 10px; background-color: var(--color-surface); padding: 10px">{{ step.instruction | show_lines }}</p>
           </div>
         {% else %}
           <p>No instructions provided.</p>
@@ -202,7 +198,7 @@
     </section>
   </div>
 
-  <section class="recipe-section">
+  <section class="recipe-section" id="ratings">
     <h3>All ratings</h3>
 
     {% for rating in ratings %}
@@ -215,9 +211,21 @@
     {% else %}
       <p>No ratings yet.</p>
     {% endfor %}
+    <nav class="pagination" aria-label="Rating pages">
+      {% if rating_page > 1 %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            rating_page=rating_page-1, comment_page=comment_page, _anchor='ratings') }}">Previous</a>
+      {% endif %}
+      <span>Page {{ rating_page }} of {{ rating_pages }}</span>
+      {% if rating_page < rating_pages %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            rating_page=rating_page+1, comment_page=comment_page, _anchor='ratings') }}">Next</a>
+      {% endif %}
+    </nav>
+
   </section>
 
-  <section class="recipe-section">
+  <section class="recipe-section" id="comments">
     <h2>Comments</h2>
 
     <div class="comment-list">
@@ -225,11 +233,11 @@
         <div class="comment">
           <div class="comment-header">
             <strong>@{{ comment.creator_username }}</strong>
-            <span>{{ comment.created_at }}</span>
+            <span>{{ comment.created_at | datetime }}</span>
           </div>
           <div class="flex-center" style="justify-content: space-between">
-            <p>{{ comment.value }}</p>
-            {% if session.user_id and session.user_id == recipe.creator_id %}
+            <p>{{ comment.value | show_lines }}</p>
+            {% if session.user_id and session.user_id == comment.creator_id %}
               <div>
                 {% include "recipes/edit_recipe_comment.html" %}
                 {% include "recipes/remove_recipe_comment.html" %}
@@ -242,21 +250,31 @@
       {% endfor %}
     </div>
 
+
+    <nav class="pagination" aria-label="Comment pages">
+      {% if comment_page > 1 %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            comment_page=comment_page-1, rating_page=rating_page, _anchor='comments') }}">Previous</a>
+      {% endif %}
+      <span>Page {{ comment_page }} of {{ comment_pages }}</span>
+      {% if comment_page < comment_pages %}
+        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+            comment_page=comment_page+1, rating_page=rating_page, _anchor='comments') }}">Next</a>
+      {% endif %}
+    </nav>
+
     {% if session.user_id %}
       <form
         action="/recipes/create/comment/{{ recipe.id }}"
         method="post"
         class="comment-form"
       >
-        <input
-          type="hidden"
-          name="csrf_token"
-          value="{{ session.csrf_token }}"
-        >
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
         <label>
           Add a comment
           <textarea
+            maxlength="5000"
             name="comment"
             rows="3"
             required
