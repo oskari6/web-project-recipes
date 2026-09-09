@@ -102,8 +102,11 @@ def recipe_form(found_recipe=None, error=None):
                            request.form.getlist("ingredient_unit"))]
         steps = [{"instruction": step} for step in request.form.getlist("recipe_step")]
     return render_template(
-        "recipes/recipe_form.html", recipe=found_recipe, values=values,
-        recipe_ingredients=ingredients, recipe_steps=steps,
+        "recipes/recipe_form.html",
+        recipe=found_recipe,
+        values=values,
+        recipe_ingredients=ingredients,
+        recipe_steps=steps,
         recipe_images=recipe_service.get_images(recipe_id) if recipe_id else [],
         food_types=FOOD_TYPES, dietary_requirements=DIETARY_REQUIREMENTS,
         units=UNITS, error=error
@@ -168,7 +171,13 @@ def create_recipe():
 
 
 def owned_recipe(recipe_id):
-    """Require an existing recipe owned by the current user."""
+    """
+    Require an existing recipe owned by the current user.
+    Args:
+        recipe_id(int): recipe's id
+    Returns:
+        found_recipe(recipe): recipe that's found
+    """
     found_recipe = recipe_service.get_recipe(recipe_id)
     if not found_recipe:
         abort(404)

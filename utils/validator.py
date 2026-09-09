@@ -34,25 +34,25 @@ def validate_user(username, password, password_confirm, user_id=None):
 
 def validate_auth_register(username, password, password_confirm):
     """
-        Validate a new account.
-        Args:
-            username(str): username
-            password(str): password
-            password_confirm(str): password confirmation
-        Returns:
-            errors(str | None): possible errors
+    Validate a new account.
+    Args:
+        username(str): username
+        password(str): password
+        password_confirm(str): password confirmation
+    Returns:
+        errors(str | None): possible errors
     """
     return validate_user(username, password, password_confirm)
 
 
 def validate_auth_login(username, password):
     """
-        Validate credentials without revealing whether an account exists.
-        Args:
-            username(str): username
-            password(str): password
-        Returns:
-            errors(str | None): possible errors
+    Validate credentials without revealing whether an account exists.
+    Args:
+        username(str): username
+        password(str): password
+    Returns:
+        errors(str | None): possible errors
         """
     if not username or not password or len(username) > 16 or len(password) > 64:
         return "Wrong username or password."
@@ -63,13 +63,13 @@ def validate_auth_login(username, password):
 
 def is_positive_integer(value):
     """
-        Accept optional positive integers that fit in SQLite's integer storage.
-        Args:
-            username(str): username
-            password(str): password
-            password_confirm(str): password confirmation
-        Returns:
-            errors(str | None): possible errors    
+    Accept optional positive integers that fit in SQLite's integer storage.
+    Args:
+        username(str): username
+        password(str): password
+        password_confirm(str): password confirmation
+    Returns:
+        errors(str | None): possible errors    
     """
     return (not value or (value.isascii() and value.isdecimal()
                          and len(value) <= 19 and 0 < int(value) <= 2**63 - 1))
@@ -77,11 +77,11 @@ def is_positive_integer(value):
 
 def validate_recipe(form):
     """
-        Validate recipe metadata and the parallel ingredient/step fields.
-        Args:
-            form({}): the whole recipe form object
-        Returns:
-            errors(str | None): possible errors
+    Validate recipe metadata and the parallel ingredient/step fields.
+    Args:
+        form({}): the whole recipe form object
+    Returns:
+        errors(str | None): possible errors
     """
     for name, limit in (("title", 200), ("description", 10000)):
         value = form.get(name, "").strip()
@@ -107,11 +107,11 @@ def validate_recipe(form):
 
 def validate_ingredients(form):
     """
-        Reject truncated lists, invalid units and nonfinite or nonpositive amounts.
-        Args:
-            form({}): the whole recipe form object
-        Returns:
-            errors(str | None): possible errors    
+    Reject truncated lists, invalid units and nonfinite or nonpositive amounts.
+    Args:
+        form({}): the whole recipe form object
+    Returns:
+        errors(str | None): possible errors    
     """
     ingredients = form.getlist("ingredient")
     amounts = form.getlist("ingredient_amount")
@@ -139,11 +139,11 @@ def validate_ingredients(form):
 
 def validate_comment(value):
     """
-        Validate new and edited comments.
-        Args:
-            value(int): comment
-        Returns:
-            errors(str | None): possible errors    
+    Validate new and edited comments.
+    Args:
+        value(int): comment
+    Returns:
+        errors(str | None): possible errors    
     """
     if not value.strip() or len(value.strip()) > 5000:
         return "Comments must contain 1–5000 characters."
@@ -152,11 +152,11 @@ def validate_comment(value):
 
 def validate_rating(value):
     """
-        Validate new and edited ratings.
-        Args:
-            value(int): rating value
-        Returns:
-            errors(str | None): possible errors
+    Validate new and edited ratings.
+    Args:
+        value(int): rating value
+    Returns:
+        errors(str | None): possible errors
     """
     if value not in {"1", "2", "3", "4", "5"}:
         return "Rating must be a whole number from 1 to 5."
