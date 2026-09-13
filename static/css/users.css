@@ -6,8 +6,8 @@
 }
 
 .profile-card {
-  padding: 2rem;
-  background: white;
+  padding: var(--space-xl);
+  background: var(--color-background);
   border-radius: var(--radius-lg);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
@@ -15,7 +15,7 @@
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 }
 
 .profile-picture {
@@ -30,55 +30,55 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eee;
-  font-size: 2rem;
+  background: var(--color-surface-2);
+  font-size: var(--space-xl);
   font-weight: bold;
 }
 
 .profile-info h1 {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-sm);
 }
 
 .profile-stats {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1.5rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .profile-actions {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1.5rem;
+  margin-top: var(--space-lg);
 }
 
 .user-recipes-section {
-  margin-top: 3rem;
+  margin-top: var(--space-2xl);
 }
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
 .section-header span {
-  color: #777;
+  color: var(--color-text-muted);
 }
 
 .user-panel {
   width: 100%;
   max-width: 400px;
 
-  padding: 2rem;
-  background: white;
+  padding: var(--space-xl);
+  background: var(--color-background);
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .user-panel h1 {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-lg);
 }
 
 .user-panel label {
@@ -92,24 +92,21 @@
 }
 
 .user-panel button {
-  margin-top: 0.5rem;
+  margin-top: var(--space-sm);
 }
 
 .user-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-top: 1.5rem;
+  margin-top: var(--space-lg);
 }
 
 .user-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
-
-  padding: 1rem 1.25rem;
-
-  background: white;
+  gap: var(--space-md);
+  background: var(--color-background);
   border-radius: var(--radius-lg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -127,7 +124,7 @@
   align-items: center;
   justify-content: center;
 
-  background: #eee;
+  background: var(--color-surface-2);
   font-size: 1.25rem;
   font-weight: bold;
 }
@@ -135,16 +132,12 @@
 .user-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-}
-
-.user-name {
-  font-size: 1.05rem;
+  gap: var(--space-xs);
 }
 
 .user-meta {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--color-text-muted);
 }
 
 .user-recipes {
@@ -155,10 +148,10 @@
   align-items: center;
 
   font-size: 0.85rem;
-  color: #777;
+  color: var(--color-text-muted);
 }
 
 .user-recipes strong {
-  font-size: 1.1rem;
-  color: #222;
+  font-size: var(--space-md);
+  color: var(--color-text);
 }

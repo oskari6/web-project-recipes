@@ -128,9 +128,11 @@ select {
   cursor: pointer;
   align-self: flex-start;
 }
+
 button:hover {
   filter: brightness(0.9) !important;
 }
+
 button:disabled,
 input:disabled,
 textarea:disabled,
@@ -179,45 +181,7 @@ table {
 /* Lists */
 ul,
 ol {
-  padding-left: 2rem;
-}
-
-dialog {
-  border: none;
-  border-radius: 8px;
-  padding: 2rem;
-  position: fixed;
-  margin: auto;
-
-  opacity: 0;
-  transform: scale(0.95);
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease,
-    display 0.2s allow-discrete;
-}
-
-dialog[open] {
-  opacity: 1;
-  transform: scale(1);
-}
-
-dialog::backdrop {
-  background: rgb(0 0 0 / 50%);
-  transition:
-    background 0.2s ease,
-    display 0.2s allow-discrete;
-}
-
-@starting-style {
-  dialog[open] {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  dialog[open]::backdrop {
-    background: rgb(0 0 0 / 0%);
-  }
+  padding-left: var(--space-xl);
 }
 
 header {
@@ -225,21 +189,19 @@ header {
   background: var(--color-background);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  padding: 1em;
 }
 
 header nav {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 2rem;
 }
 
 header nav a {
-  color: #222;
+  color: var(--color-text);
   text-decoration: none;
 }
 
@@ -258,15 +220,13 @@ footer {
 .footer-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 2rem;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .footer-container a {
-  color: #222;
+  color: var(--color-text);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -290,7 +250,7 @@ footer {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 
   text-align: center;
 }
@@ -312,21 +272,29 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: var(--space-md);
 }
+
 .flex-between {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .flex-wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-md);
 }
+
 .flex-column {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md);
+}
+
+.text-center {
+  text-align: center;
 }
 
 .nav-logo {
@@ -336,9 +304,9 @@ footer {
 }
 
 .empty-state {
-  padding: 3rem;
+  padding: var(--space-2xl);
   text-align: center;
-  background: white;
+  background: var(--color-background);
   border-radius: var(--radius-lg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -347,28 +315,27 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
-  margin: 2rem;
+  gap: var(--space-lg);
+  margin: var(--space-xl);
 }
 
 .notification {
   position: fixed;
-  top: 1.5rem;
+  top: var(--space-lg);
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
 
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 
   min-width: 280px;
   max-width: 500px;
-  padding: 1rem 1.25rem;
 
-  background: white;
+  background: var(--color-background);
   border: 1px solid;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
@@ -382,13 +349,18 @@ footer {
   border-color: #a3cfbb;
 }
 
+.header {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
 .notification-close {
   margin-left: auto;
   padding: 0;
   border: none;
   background: none;
   color: inherit;
-  font-size: 1.5rem;
+  font-size: var(--space-lg);
   cursor: pointer;
 }
 
@@ -406,9 +378,47 @@ footer {
 }
 
 .modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
+  background: var(--color-background);
+  padding: var(--space-xl);
+  border-radius: var(--radius-md);
+}
+
+.min-w-500 {
+  min-width: 500px;
+}
+
+.min-w-200 {
+  min-width: 200px;
+}
+
+.min-w-100 {
+  min-width: 200px;
+}
+
+.padding-1 {
+  padding: var(--space-md);
+}
+
+.text-white {
+  color: white;
+}
+
+.margin-left-auto {
+  margin-left: auto;
+}
+
+.user-name {
+  font-weight: bold;
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+}
+
+.user-name:hover {
+  color: var(--color-text);
+}
+
+.plain-text {
+  text-decoration: none;
 }
 
 @keyframes page-load {
@@ -437,6 +447,7 @@ footer {
   /* Colors */
   --color-background: #ffffff;
   --color-surface: #f7f7f7;
+  --color-surface-2: #eeeeee;
   --color-text: #222222;
   --color-text-muted: #666666;
   --color-border: #dddddd;
