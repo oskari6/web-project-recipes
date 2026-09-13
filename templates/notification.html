@@ -11,7 +11,7 @@
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% for category, message in messages %}
-    <div class="notification notification-{{ category }}">
+    <div class="notification notification-{{ category }} padding-1">
       <span>{{ message }}</span>
       <button type="button"
               class="notification-close"

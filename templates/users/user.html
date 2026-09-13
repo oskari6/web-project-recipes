@@ -3,7 +3,7 @@
 {% block content %}
 <section class="hero-wide" style="background-image: url('/static/images/hero7.jpg');">
   <div class="hero-content">
-      <h1 style="padding: 1rem; color:white">{{user.username}}'s profile</h1>
+      <h1 class="padding-1 text-white">{{user.username}}'s profile</h1>
   </div>
 </section>
 
@@ -42,7 +42,7 @@
         </div>
       </div>
       {% if user.id == session.user_id %}
-        <div style="margin-left: auto">
+        <div class="margin-left-auto">
           {% include "users/remove_user.html" %}
         </div>
       {% endif %}

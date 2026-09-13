@@ -4,11 +4,11 @@
 {% block content %}
 <section class="hero-wide" style="background-image: url('/static/images/hero6.jpg');">
   <div class="hero-content">
-      <h1 style="padding: 1rem; color:white">Find recipes</h1>
+      <h1 class="padding-1 text-white">Find recipes</h1>
   </div>
 </section>
 
-<div style="padding: 1rem;">
+<div class="padding-1">
   <form action="{{ url_for('recipes.recipes', page=1) }}" method="get">
     <label>Search recipes
       <input
@@ -24,7 +24,7 @@
 
   <div class="recipe-list">
     {% for recipe in recipes %}
-      <div class="recipe-card">
+      <div class="recipe-card padding-1">
 
         <div class="recipe-card-image">
           {% if recipe.image_filename %}
@@ -75,8 +75,8 @@
           <div class="recipe-card-meta">
             <span>
               <strong>Creator:</strong>
-              <a href="{{ url_for('users.user', user_id=recipe.creator_id) }}">
-                @{{ recipe.creator_username }}
+              <a class="plain-text" href="{{ url_for('users.user', user_id=recipe.creator_id) }}">
+                <span class="user-name">@{{ recipe.creator_username }}</span>
               </a>
             </span>
 

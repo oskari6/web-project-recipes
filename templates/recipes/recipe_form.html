@@ -11,10 +11,10 @@
 {% endblock %}
 
 {% block content %}
-<div style="padding: 1rem" class="container">
+<div class="container padding-1">
   <section class="hero-wide" style="background-image: url('/static/images/hero5.jpg');">
     <div class="hero-content">
-        <h1 style="padding: 1rem; color:white">{{ "Edit recipe" if editing else "Create a recipe" }}</h1>
+        <h1 class="padding-1 text-white">{{ "Edit recipe" if editing else "Create a recipe" }}</h1>
     </div>
   </section>
 
@@ -73,7 +73,7 @@
             min="1"
             step="1"
             placeholder="Servings"
-            style="width: 100px;"
+            class="min-w-100;"
             type="number"
             name="servings"
             value="{{ values.get('servings', '') or '' }}"
@@ -85,7 +85,7 @@
             min="1"
             step="1"
             placeholder="Preparation time (min)"
-            style="width: 200px;"
+            class="min-w-200"
             type="number"
             name="preparation_time"
             value="{{ values.get('preparation_time', '') or '' }}"
@@ -97,9 +97,9 @@
         </label>
     </div>
 
-    <div class="flex-column" style="padding-top: 1rem;">
+    <div class="flex-column padding-1">
       <h2>Ingredients</h2>
-      <div style="padding: 1rem;">
+      <div class="padding-1">
         <div class="ingredient-row">
         <h5>Ingredient</h5>
         <h5>Amount</h5>
@@ -143,9 +143,9 @@
         {% endfor %}
       </div>
 
-  <div style="padding-top: 1rem">
+  <div class="padding-1">
     <h2>Steps</h2>
-    <div style="padding: 1rem" class="flex-wrap">
+    <div class="flex-wrap padding-1">
       {% for i in range(10) %}
         {% set step = recipe_steps[i] if i < recipe_steps|length else none %}
 
@@ -191,7 +191,7 @@
           {% endfor %}
         </div>
       {% endif %}
-      <label style="padding: 1rem;">
+      <label class="padding-1">
         Add images:
         <input
           type="file"
@@ -202,10 +202,10 @@
       </label>
     </div>
 
-    <div style="padding-top: 1rem">
+    <div class="padding-1">
         {% if editing %}
-          <a style="text-decoration: none" href="{{ url_for('recipes.recipe', recipe_id=recipe.id) }}">
-            <button type="button">Cancel</button>
+          <a class="button" href="{{ url_for('recipes.recipe', recipe_id=recipe.id) }}">
+            Cancel
           </a>
         {% endif %}
         <button class="button button-primary" type="submit">
