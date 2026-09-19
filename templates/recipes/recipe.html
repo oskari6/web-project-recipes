@@ -30,8 +30,8 @@
             <div class="recipe-dates">
               <span>Created {{ recipe.created_at | datetime }}</span>
 
-              {% if recipe.updated_at %}
-                <span>Updated {{ recipe.updated_at }}</span>
+              {% if recipe.updated_at and recipe.updated_at != recipe.created_at %}
+                <span>Updated {{ recipe.updated_at | datetime }}</span>
               {% endif %}
             </div>
           </div>

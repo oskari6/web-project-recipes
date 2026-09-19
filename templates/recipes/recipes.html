@@ -10,15 +10,12 @@
 
 <div class="padding-1">
   <form action="{{ url_for('recipes.recipes', page=1) }}" method="get">
-    <label>Search recipes
-      <input
-        type="text"
-        name="query"
-        placeholder="search recipes..."
-        value="{{ query }}"
-      >
-    </label>
-
+    <input
+      type="text"
+      name="query"
+      placeholder="search recipes..."
+      value="{{ query }}"
+    >
     <button type="submit">Search</button>
   </form>
 

@@ -70,7 +70,7 @@ a {
 }
 
 a:hover {
-  font-weight: bold;
+  text-shadow: 0 0 0 currentColor;
 }
 strong,
 b {
@@ -157,7 +157,7 @@ button,
 button:hover,
 .button:hover {
   filter: brightness(0.9) !important;
-  font-weight: normal;
+  text-shadow: 0 0 0 currentColor;
 }
 
 .button-danger {
@@ -207,7 +207,7 @@ header nav a {
 
 header nav a:hover {
   text-decoration: underline;
-  font-weight: bold;
+  text-shadow: 0 0 0 currentColor;
 }
 
 footer {
@@ -231,10 +231,6 @@ footer {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-}
-
-.footer-container a:hover {
-  text-decoration: underline;
 }
 
 /* Accessibility */
@@ -262,10 +258,6 @@ footer {
 .container {
   width: min(100% - 2rem, var(--content-width));
   margin-inline: auto;
-}
-
-.flex {
-  display: flex;
 }
 
 .flex-center {
@@ -411,10 +403,6 @@ footer {
   font-weight: bold;
   color: var(--color-text-muted);
   font-size: 1.05rem;
-}
-
-.user-name:hover {
-  color: var(--color-text);
 }
 
 .plain-text {

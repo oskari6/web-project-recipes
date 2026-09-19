@@ -9,15 +9,12 @@
 
 <div class="padding-1">
     <form action="{{ url_for('users.users', page=1) }}" method="get">
-      <label>Search users
-        <input
-          type="text"
-          name="query"
-          placeholder="search users..."
-          value="{{ query }}"
-        >
-      </label>
-
+      <input
+        type="text"
+        name="query"
+        placeholder="search users..."
+        value="{{ query }}"
+      >
       <button type="submit">Search</button>
     </form>
   <div class="user-list">
@@ -36,7 +33,7 @@
         {% endif %}
 
         <div class="user-info">
-          <strong class="user-name"><a href="/users/user/{{ user.id }}">{{ user.username }}</a></strong>
+          <strong class="user-name"><a href="/users/user/{{ user.id }}">@{{ user.username }}</a></strong>
 
           <span class="user-meta">
             Joined {{ user.created_at | datetime }}
