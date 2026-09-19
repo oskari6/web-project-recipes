@@ -15,39 +15,77 @@
 
 Tässä pääasiallinen tietokohde on ruokaresepti ja toissijainen tietokohde on kommentti reseptiin.
 
-# Rakenne
+# Projektin rakenne
 
-kansiot:
-/.vscode/ - kehitysympräistö konfiguraatio
-/db/ - tietokantaan liittyvät toiminnot: migraatio, datan alustus ja funktiot
-/routes/ - reititykset eri resursseille
-/services/ - toiminnalliset funktiot resursseille
-/static/ - staattiset tiedostot: kuvat, css, fontit
-/templates/ - html templaatit
-/utils/ - muut yleiset apufunktiot ja resurssit: dekoraattorit ja muuttumattomat muuttujat
+## Kansiot
 
-tiedostot:
-.env - säilytys paikka session secretille ja muulle salaiselle
-app.py - sovelluksen entrypoint
-database.db - generoitu tietokanta
-Makefile - komentojen ajon abstraktio tiedosto
-requirements.txt - ulkoiset kirjasto riippuvuudet
-setup.sh - kehitysympäristön alustus ja tietokannan generointi
+* `.vscode/` – Kehitysympäristön konfiguraatio.
+* `db/` – Tietokantaan liittyvät toiminnot: migraatiot, datan alustus ja funktiot.
+* `routes/` – Reititykset eri resursseille.
+* `services/` – Resurssien toiminnalliset funktiot.
+* `static/` – Staattiset tiedostot: kuvat, CSS ja fontit.
+* `templates/` – HTML-templaatit.
+* `utils/` – Muut yleiset apufunktiot ja resurssit, kuten dekoraattorit ja muuttumattomat muuttujat.
+
+## Tiedostot
+
+* `.env` – Säilytyspaikka session secretille ja muille salaisuuksille.
+* `app.py` – Sovelluksen entrypoint.
+* `database.db` – Generoitu tietokanta.
+* `Makefile` – Komentojen ajon abstrahointiin käytettävä tiedosto.
+* `requirements.txt` – Ulkoiset kirjastoriippuvuudet.
+* `setup.sh` – Kehitysympäristön alustus ja tietokannan generointi.
 
 # Kehitys
 
-sovelluksen käynnistys:
-(jos sinulta ei löydy jo make -pakettia, asenna se sudo apt install make -komennolla)
+## Sovelluksen käynnistys
+
+Jos `make`-pakettia ei ole vielä asennettu, asenna se komennolla:
+
+```bash
+sudo apt install make
+```
+
+Alusta kehitysympäristö:
+
+```bash
 make setup
+```
+
+Käynnistä sovellus kehitystilassa:
+
+```bash
 make dev
-tai vaihtoehtoisesti ilman debuggausta:
+```
+
+Tai vaihtoehtoisesti ilman debuggausta:
+
+```bash
 make start
+```
 
-ongelmien tullessa: oskari.anton.sulkakoski@helsinki.fi
+## Ongelmatilanteet
 
-lisäosat:
-SHIFT + CTRL + X → Find extensions
-Kirjoita hakukenttään @recommended ja asenna Workspace Recommendations -header osion lisäosat
+Ongelmatilanteissa ota yhteyttä:
+
+`oskari.anton.sulkakoski@helsinki.fi`
+
+## VS Code -lisäosat
+
+Avaa VS Coden lisäosat:
+
+```text
+Ctrl + Shift + X
+```
+
+Kirjoita hakukenttään:
+
+```text
+@recommended
+```
+
+Asenna **Workspace Recommendations** -otsikon alla näkyvät suositellut lisäosat.
+
 
 # Suorituskyky
 
