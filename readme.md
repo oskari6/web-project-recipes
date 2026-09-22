@@ -63,6 +63,18 @@ Käynnistä sovellus kehitystilassa (.env tiedoston kanssa):
 set -a; . ./.env; set +a; .venv/bin/flask run --debug
 ```
 
+Jos haluat enemmän dataa tietokantaan (seed.py numeroita saa vaihtaa):
+
+```bash
+.venv/bin/python -m db.seed
+```
+
+tietokantaan pääsee käsiksi komennolla:
+
+```bash
+sqlite3 database.db
+```
+
 ## Ongelmatilanteet
 
 Ongelmatilanteissa ota yhteyttä:

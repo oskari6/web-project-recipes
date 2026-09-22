@@ -8,3 +8,4 @@ static/uploads/*
 !static/uploads/recipes/
 static/uploads/recipes/*
 Makefile
+/.vscode
