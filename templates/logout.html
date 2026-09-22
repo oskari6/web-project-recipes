@@ -2,7 +2,7 @@
 
 <div id="logout" class="modal">
   <div class="modal-content">
-   <form action="{{ url_for('auth.logout') }}" method="post">
+   <form action="{{ url_for('logout') }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <p>Do you want to logout?</p>
 

@@ -199,7 +199,7 @@
 
     <div class="padding-1">
         {% if editing %}
-          <a class="button" href="{{ url_for('recipes.recipe', recipe_id=recipe.id) }}">
+          <a class="button" href="{{ url_for('recipe', recipe_id=recipe.id) }}">
             Cancel
           </a>
         {% endif %}

@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="padding-1">
-    <form action="{{ url_for('users.users', page=1) }}" method="get">
+    <form action="{{ url_for('users', page=1) }}" method="get">
       <input
         type="text"
         name="query"
@@ -48,11 +48,11 @@
 
   <nav class="pagination" aria-label="Users pages">
     {% if page > 1 %}
-      <a href="{{ url_for('users.users', page=page-1, query=query) }}">Previous</a>
+      <a href="{{ url_for('users', page=page-1, query=query) }}">Previous</a>
     {% endif %}
     <span>Page {{ page }} of {{ page_count }}</span>
     {% if page < page_count %}
-      <a href="{{ url_for('users.users', page=page+1, query=query) }}">Next</a>
+      <a href="{{ url_for('users', page=page+1, query=query) }}">Next</a>
     {% endif %}
   </nav>
 {% endblock %}

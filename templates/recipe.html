@@ -22,7 +22,7 @@
           </div>
           <div>
             <h1>{{ recipe.title }}</h1>
-            <a class="plain-text" href="{{ url_for('users.user', user_id=recipe.creator_id) }}">
+            <a class="plain-text" href="{{ url_for('user', user_id=recipe.creator_id) }}">
               By <span class="user-name">@{{ recipe.creator_username }}</span>
             </a>
             <div class="recipe-dates">
@@ -55,7 +55,7 @@
                     <strong>{{ user_rating.value }} / 5</strong>
                   </h4>
 
-                  {% include "recipes/edit_recipe_rating.html" %}
+                  {% include "edit_recipe_rating.html" %}
                 {% else %}
                   <form
                     action="/recipes/create/rating/{{ recipe.id }}"
@@ -140,11 +140,11 @@
       <div class="recipe-actions">
         <a
            class="button button-alt"
-          href="{{ url_for('recipes.edit_recipe', recipe_id=recipe.id) }}"
+          href="{{ url_for('edit_recipe', recipe_id=recipe.id) }}"
         >
           Edit
         </a>
-        {% include "recipes/remove_recipe.html" %}
+        {% include "remove_recipe.html" %}
       </div>
     {% endif %}
   </section>
@@ -199,7 +199,7 @@
 
     {% for rating in ratings %}
       <div>
-        <a class="plain-text" href="{{ url_for('users.user', user_id=rating.creator_id) }}">
+        <a class="plain-text" href="{{ url_for('user', user_id=rating.creator_id) }}">
           <span class="user-name">@{{ rating.creator_username }}</span>
         </a>
         <span>Rated this recipe a {{ rating.value }} / 5</span>
@@ -209,12 +209,12 @@
     {% endfor %}
     <nav class="pagination" aria-label="Rating pages">
       {% if rating_page > 1 %}
-        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+        <a href="{{ url_for('recipe', recipe_id=recipe.id,
             rating_page=rating_page-1, comment_page=comment_page, _anchor='ratings') }}">Previous</a>
       {% endif %}
       <span>Page {{ rating_page }} of {{ rating_pages }}</span>
       {% if rating_page < rating_pages %}
-        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+        <a href="{{ url_for('recipe', recipe_id=recipe.id,
             rating_page=rating_page+1, comment_page=comment_page, _anchor='ratings') }}">Next</a>
       {% endif %}
     </nav>
@@ -235,8 +235,8 @@
             <p>{{ comment.value | show_lines }}</p>
             {% if session.user_id and session.user_id == comment.creator_id %}
               <div>
-                {% include "recipes/edit_recipe_comment.html" %}
-                {% include "recipes/remove_recipe_comment.html" %}
+                {% include "edit_recipe_comment.html" %}
+                {% include "remove_recipe_comment.html" %}
               </div>
             {% endif %}
           </div>
@@ -249,12 +249,12 @@
 
     <nav class="pagination" aria-label="Comment pages">
       {% if comment_page > 1 %}
-        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+        <a href="{{ url_for('recipe', recipe_id=recipe.id,
             comment_page=comment_page-1, rating_page=rating_page, _anchor='comments') }}">Previous</a>
       {% endif %}
       <span>Page {{ comment_page }} of {{ comment_pages }}</span>
       {% if comment_page < comment_pages %}
-        <a href="{{ url_for('recipes.recipe', recipe_id=recipe.id,
+        <a href="{{ url_for('recipe', recipe_id=recipe.id,
             comment_page=comment_page+1, rating_page=rating_page, _anchor='comments') }}">Next</a>
       {% endif %}
     </nav>

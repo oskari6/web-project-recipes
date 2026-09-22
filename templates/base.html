@@ -18,7 +18,7 @@
         <a href="/users/1">Users</a>
         {% if session.user_id %}
           <a href="/users/user/{{session.user_id}}">My profile</a>
-          {% include "auth/logout.html" %}
+          {% include "logout.html" %}
         {% else %}
           <a href="/auth/login">Sign in</a>
           <a href="/auth/register">Register</a>

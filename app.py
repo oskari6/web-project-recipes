@@ -127,34 +127,34 @@ def not_found(_error):
     """
     Error route
     """
-    return render_template("errors/404.html"), 404
+    return render_template("404.html"), 404
 
 @app.errorhandler(403)
 def forbidden(_error):
     """
     Error route
     """
-    return render_template("errors/403.html"), 403
+    return render_template("403.html"), 403
 
 @app.errorhandler(401)
 def unauthorized(error):
     """
     Error route
     """
-    return render_template("errors/401.html", error=error), 401
+    return render_template("401.html", error=error), 401
 
 @app.errorhandler(500)
 def internal_server(_error):
     """
     Error route
     """
-    return render_template("errors/500.html"), 500
+    return render_template("500.html"), 500
 
 @app.errorhandler(400)
 @app.errorhandler(413)
 def invalid_request(error):
     """Show input errors with their correct HTTP status."""
-    return render_template("errors/400.html", error=error.description), error.code
+    return render_template("400.html", error=error.description), error.code
 
 @require_csrf
 @app.route("/auth/register", methods=["POST", "GET"])
@@ -163,7 +163,7 @@ def register():
     Register route
     """
     if request.method == "GET":
-        return render_template("users/user_form.html", user=None)
+        return render_template("user_form.html", user=None)
 
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
@@ -173,7 +173,7 @@ def register():
     error = validator.validate_auth_register(username, password, password_confirm)
     if error:
         return render_template(
-            "users/user_form.html",
+            "user_form.html",
             error=error
         ), 400
 
@@ -186,10 +186,10 @@ def register():
         )
 
         flash("Registering account succeeded, you can now login.")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("login"))
     except sqlite3.IntegrityError:
         remove_profile_file(filename)
-        return render_template("users/user_form.html", error="Username is already reserved."), 400
+        return render_template("user_form.html", error="Username is already reserved."), 400
     except Exception:
         remove_profile_file(filename)
         raise
@@ -201,7 +201,7 @@ def login():
     Login route
     """
     if request.method == "GET":
-        return render_template("auth/login.html")
+        return render_template("login.html")
 
     username = request.form.get("username", "")
     password = request.form.get("password", "")
@@ -209,7 +209,7 @@ def login():
     error = validator.validate_auth_login(username, password)
     if error:
         return render_template(
-            "auth/login.html",
+            "login.html",
             error=error
         ), 400
 
@@ -246,11 +246,11 @@ def recipes(page=1):
     page_count = max(page_count, 1)
 
     if page < 1:
-        return redirect(url_for("recipes.recipes", page=1, query=query))
+        return redirect(url_for("recipes", page=1, query=query))
     if page > page_count:
-        return redirect(url_for("recipes.recipes", page=page_count, query=query))
+        return redirect(url_for("recipes", page=page_count, query=query))
 
-    return render_template("/recipes/recipes.html",
+    return render_template("recipes.html",
         page=page,
         page_count=page_count,
         recipes=recipe_service.get_recipes(page, page_size, query=query),
@@ -288,7 +288,7 @@ def recipe(recipe_id):
     found_user = user_service.get_user(found_recipe["creator_id"])
 
     return render_template(
-        "/recipes/recipe.html",
+        "recipe.html",
         recipe=found_recipe,
         ingredients=ingredients,
         recipe_steps=recipe_steps,
@@ -320,7 +320,7 @@ def recipe_form(found_recipe=None, error=None):
                            request.form.getlist("ingredient_unit"))]
         steps = [{"instruction": step} for step in request.form.getlist("recipe_step")]
     return render_template(
-        "recipes/recipe_form.html",
+        "recipe_form.html",
         recipe=found_recipe,
         values=values,
         recipe_ingredients=ingredients,
@@ -375,7 +375,7 @@ def save_recipe(found_recipe=None):
         con.close()
     remove_recipe_files(recipe_id, [image["file_name"] for image in existing_images
                                     if str(image["id"]) in removed_ids])
-    return redirect(url_for("recipes.recipe", recipe_id=recipe_id))
+    return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
 @app.route("/recipes/create", methods=["GET", "POST"])
@@ -428,7 +428,7 @@ def remove_recipe(recipe_id):
     images = recipe_service.get_images(recipe_id)
     recipe_service.delete_recipe(recipe_id)
     remove_recipe_files(recipe_id, [image["file_name"] for image in images])
-    return redirect(url_for("recipes.recipes", page=1))
+    return redirect(url_for("recipes", page=1))
 
 
 @app.route("/recipes/create/comment/<int:recipe_id>", methods=["POST"])
@@ -449,7 +449,7 @@ def create_comment(recipe_id):
         abort(400, description=error)
     recipe_service.add_comment(recipe_id, session["user_id"], comment)
 
-    return redirect(url_for("recipes.recipe", recipe_id=recipe_id))
+    return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
 @app.route("/recipes/edit/comment/<int:comment_id>", methods=["POST"])
@@ -474,7 +474,7 @@ def edit_comment(comment_id):
     if error:
         abort(400, description=error)
     recipe_service.update_comment(comment_id, value)
-    return redirect(url_for("recipes.recipe", recipe_id=recipe_id))
+    return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
 @app.route("/recipes/remove/comment/<int:comment_id>", methods=["POST"])
@@ -495,7 +495,7 @@ def remove_comment(comment_id):
 
     recipe_id = comment["recipe_id"]
     recipe_service.delete_comment(comment_id)
-    return redirect(url_for("recipes.recipe", recipe_id=recipe_id))
+    return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
 @app.route("/recipes/create/rating/<int:recipe_id>", methods=["POST"])
@@ -522,7 +522,7 @@ def create_rating(recipe_id):
         recipe_service.add_rating(recipe_id, session["user_id"], int(rating))
     except sqlite3.IntegrityError:
         abort(400, description="Unable to add this rating. It may already exist.")
-    return redirect(url_for("recipes.recipe", recipe_id=recipe_id))
+    return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
 @app.route("/recipes/edit/rating/<int:rating_id>", methods=["POST"])
@@ -548,7 +548,7 @@ def edit_rating(rating_id):
     if error:
         abort(400, description=error)
     recipe_service.update_rating(rating_id, int(value))
-    return redirect(url_for("recipes.recipe", recipe_id=recipe_id))
+    return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
 @app.route("/users/<int:page>")
@@ -566,12 +566,12 @@ def users(page=1):
     page_count = max(page_count, 1)
 
     if page < 1:
-        return redirect(url_for("users.users", page=1, query=query))
+        return redirect(url_for("users", page=1, query=query))
     if page > page_count:
-        return redirect(url_for("users.users", page=page_count, query=query))
+        return redirect(url_for("users", page=page_count, query=query))
 
     return render_template(
-        "users/users.html",
+        "users.html",
         users=user_service.get_users(page, page_size, query),
         page=page,
         query=query,
@@ -597,10 +597,10 @@ def user(user_id, page):
         abort(404)
 
     if page < 1 or page > page_count:
-        return redirect(url_for("users.user", user_id=user_id, page=max(1, min(page, page_count))))
+        return redirect(url_for("user", user_id=user_id, page=max(1, min(page, page_count))))
     found_recipes = recipe_service.get_recipes(page, page_size, user_id)
     return render_template(
-        "users/user.html",
+        "user.html",
         user=found_user,
         recipes=found_recipes,
         page=page,
@@ -626,7 +626,7 @@ def edit_user(user_id):
 
     if request.method == "GET":
         return render_template(
-            "users/user_form.html",
+            "user_form.html",
             user=found_user
         )
 
@@ -637,7 +637,7 @@ def edit_user(user_id):
 
     error = validator.validate_user(username, password, password_confirm, user_id)
     if error:
-        return render_template("users/user_form.html", user=found_user, error=error), 400
+        return render_template("user_form.html", user=found_user, error=error), 400
 
     filename = save_profile_picture(image)
 
@@ -654,7 +654,7 @@ def edit_user(user_id):
     except sqlite3.IntegrityError:
         remove_profile_file(filename)
         return render_template(
-            "users/user_form.html", user=found_user, error="Username is already reserved."
+            "user_form.html", user=found_user, error="Username is already reserved."
         ), 400
     except Exception:
         remove_profile_file(filename)
@@ -664,7 +664,7 @@ def edit_user(user_id):
     session["username"] = username
 
     return redirect(
-        url_for("users.user", user_id=user_id)
+        url_for("user", user_id=user_id)
     )
 
 @app.route("/users/remove", methods=["POST"])

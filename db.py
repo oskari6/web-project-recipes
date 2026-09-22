@@ -17,7 +17,7 @@ def init_db():
 
     connection = sqlite3.connect(DB_PATH)
 
-    with open("db/migrations.sql", "r", encoding="utf-8") as file:
+    with open("migrations.sql", "r", encoding="utf-8") as file:
         connection.executescript(file.read())
 
     connection.close()

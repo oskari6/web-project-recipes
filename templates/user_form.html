@@ -14,7 +14,7 @@
             {{ "Edit profile" if editing else "Register account" }}
           </h1>
           <form
-            action="{{ url_for('users.edit_user', user_id=user.id) if editing else url_for('auth.register') }}"
+            action="{{ url_for('edit_user', user_id=user.id) if editing else url_for('register') }}"
             method="post"
             enctype="multipart/form-data"
             class="flex-column"
@@ -77,7 +77,7 @@
 
             <div>
               {% if editing %}
-                <a class="button" href="{{ url_for('users.user', user_id=user.id) }}">
+                <a class="button" href="{{ url_for('user', user_id=user.id) }}">
                   Cancel
                 </a>
               {% endif %}
