@@ -79,9 +79,6 @@ ON recipe_ingredients (recipe_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_steps_recipe
 ON recipe_steps (recipe_id);
 
-CREATE INDEX IF NOT EXISTS idx_recipe_comments_recipe
-ON recipe_comments (recipe_id);
-
 CREATE INDEX IF NOT EXISTS idx_recipe_comments_creator
 ON recipe_comments (creator_id);
 
@@ -90,10 +87,3 @@ ON recipe_ratings (recipe_id);
 
 CREATE INDEX IF NOT EXISTS idx_recipe_ratings_creator
 ON recipe_ratings (creator_id);
-
-CREATE INDEX IF NOT EXISTS idx_recipes_created
-ON recipes (created_at DESC, id DESC);
-CREATE INDEX IF NOT EXISTS idx_recipes_creator_created
-ON recipes (creator_id, created_at DESC, id DESC);
-CREATE INDEX IF NOT EXISTS idx_comments_recipe_created
-ON recipe_comments (recipe_id, created_at DESC, id DESC);

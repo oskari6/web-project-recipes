@@ -51,16 +51,10 @@ Asenna riippuvuudet
 .venv/bin/pip install -r requirements.txt
 ```
 
-Luo .env tiedosto ja lisää sinne:
-
-```bash
-SECRET_KEY=74ae93c8179cea32ded4403efa7c9ba1729ed26e23b9c5e3027119f3b9a63faf
-```
-
 Käynnistä sovellus kehitystilassa (.env tiedoston kanssa):
 
 ```bash
-set -a; . ./.env; set +a; .venv/bin/flask run --debug
+.venv/bin/flask run --debug
 ```
 
 Jos haluat enemmän dataa tietokantaan (seed.py numeroita saa vaihtaa):

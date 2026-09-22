@@ -11,6 +11,7 @@ from routes import recipe_routes
 from routes import user_routes
 from routes import auth_routes
 from utils.decorators import get_csrf_token
+import config
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
@@ -23,7 +24,7 @@ app.register_blueprint(auth_routes.bp)
 db_utils.init_db()
 
 # this is for session id:s
-app.secret_key = os.environ["SECRET_KEY"]
+app.secret_key = config.secret_key
 
 @app.template_filter()
 def show_lines(content):
