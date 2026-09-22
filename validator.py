@@ -3,8 +3,8 @@ import math
 
 from werkzeug.security import check_password_hash
 
-from services import user_service
-from utils.constants import (DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS)
+import users as user_service
+from config import (DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS)
 
 
 def validate_user(username, password, password_confirm, user_id=None):

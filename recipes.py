@@ -1,6 +1,6 @@
 """Recipe service functions"""
 
-from db import utils as db_utils
+import db as db_utils
 
 def get_recipe(recipe_id):
     """

@@ -9,12 +9,11 @@ import secrets
 import markupsafe
 from werkzeug.security import generate_password_hash
 
-import config
 from flask import abort, flash, g, redirect, request, session, render_template, url_for, Flask
-from utils.images import save_profile_picture, remove_profile_file, remove_recipe_files, save_recipe_images
-from utils.constants import DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS
+from images import save_profile_picture, remove_profile_file, remove_recipe_files,save_recipe_images
+from config import DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS, SECRET_KEY
 import db as db_utils
-from utils import validator
+import validator
 import users as user_service
 import recipes as recipe_service
 
@@ -25,7 +24,7 @@ app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
 db_utils.init_db()
 
 # this is for session id:s
-app.secret_key = config.secret_key
+app.secret_key = SECRET_KEY
 
 
 

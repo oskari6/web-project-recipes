@@ -3,9 +3,11 @@ import sqlite3
 from pathlib import Path
 import random
 from werkzeug.security import generate_password_hash
-from utils import constants
+from config import DIETARY_REQUIREMENTS, FOOD_TYPES
 
 DB_PATH = Path("database.db")
+USER_COUNT = 1000000
+RECIPE_COUNT = 1000000
 
 def init_db():
     """
@@ -71,10 +73,6 @@ def query(sql, params=()):
 
 def seed():
     """Database seeding module""" 
-    DB_PATH = "database.db"
-
-    USER_COUNT = 1000000
-    RECIPE_COUNT = 1000000
     password_hash = generate_password_hash("password")
 
     db = sqlite3.connect(DB_PATH)
@@ -119,8 +117,8 @@ def seed():
                 f"Recipe {i}",
                 f"Description for recipe {i}",
                 creator_id,
-                random.choice(constants.FOOD_TYPES),
-                random.choice(constants.DIETARY_REQUIREMENTS),
+                random.choice(FOOD_TYPES),
+                random.choice(DIETARY_REQUIREMENTS),
                 random.randint(1, 8),
                 random.randint(5, 120)
             ]
