@@ -8,4 +8,3 @@ static/uploads/*
 static/uploads/recipes/*
 Makefile
 /.vscode
-reset_db.py

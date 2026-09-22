@@ -17,19 +17,18 @@ Tässä pääasiallinen tietokohde on ruokaresepti ja toissijainen tietokohde on
 
 ## Kansiot
 
-- `db/` – Tietokantaan liittyvät toiminnot: migraatiot, datan alustus ja funktiot.
-- `routes/` – Reititykset eri resursseille.
-- `services/` – Resurssien toiminnalliset funktiot.
 - `static/` – Staattiset tiedostot: kuvat, CSS ja fontit.
 - `templates/` – HTML-templaatit.
-- `utils/` – Muut yleiset apufunktiot ja resurssit, kuten dekoraattorit ja muuttumattomat muuttujat.
 
 ## Tiedostot
 
-- `.env` – Säilytyspaikka session secretille ja muille salaisuuksille.
-- `app.py` – Sovelluksen entrypoint.
+- `app.py` – Sovelluksen entrypoint ja kaikki routet
 - `database.db` – Generoitu tietokanta.
-- `requirements.txt` – Ulkoiset kirjastoriippuvuudet.
+- `db.py` – Tietokantaan liittyvät toiminnot: migraatiot, datan alustus ja funktiot.
+- `users.py` – Käyttäjien toiminnalliset funktiot.
+- `recipes.py` – Reseptien toiminnalliset funktiot.
+- `config.py` – Vakioarvot.
+- `validator.py` – Validointi funktiot.
 
 # Kehitys
 
@@ -55,10 +54,10 @@ Käynnistä sovellus kehitystilassa (.env tiedoston kanssa):
 .venv/bin/flask run --debug
 ```
 
-Jos haluat enemmän dataa tietokantaan (seed.py numeroita saa vaihtaa):
+Jos haluat enemmän dataa tietokantaan (db.py USER_COUNT ja RECIPE_COUNT numeroita saa vaihtaa):
 
 ```bash
-.venv/bin/python -m db.seed
+.venv/bin/python -c "from db import seed; seed()"
 ```
 
 tietokantaan pääsee käsiksi komennolla:
