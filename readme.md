@@ -19,49 +19,48 @@ Tässä pääasiallinen tietokohde on ruokaresepti ja toissijainen tietokohde on
 
 ## Kansiot
 
-* `.vscode/` – Kehitysympäristön konfiguraatio.
-* `db/` – Tietokantaan liittyvät toiminnot: migraatiot, datan alustus ja funktiot.
-* `routes/` – Reititykset eri resursseille.
-* `services/` – Resurssien toiminnalliset funktiot.
-* `static/` – Staattiset tiedostot: kuvat, CSS ja fontit.
-* `templates/` – HTML-templaatit.
-* `utils/` – Muut yleiset apufunktiot ja resurssit, kuten dekoraattorit ja muuttumattomat muuttujat.
+- `db/` – Tietokantaan liittyvät toiminnot: migraatiot, datan alustus ja funktiot.
+- `routes/` – Reititykset eri resursseille.
+- `services/` – Resurssien toiminnalliset funktiot.
+- `static/` – Staattiset tiedostot: kuvat, CSS ja fontit.
+- `templates/` – HTML-templaatit.
+- `utils/` – Muut yleiset apufunktiot ja resurssit, kuten dekoraattorit ja muuttumattomat muuttujat.
 
 ## Tiedostot
 
-* `.env` – Säilytyspaikka session secretille ja muille salaisuuksille.
-* `app.py` – Sovelluksen entrypoint.
-* `database.db` – Generoitu tietokanta.
-* `Makefile` – Komentojen ajon abstrahointiin käytettävä tiedosto.
-* `requirements.txt` – Ulkoiset kirjastoriippuvuudet.
-* `setup.sh` – Kehitysympäristön alustus ja tietokannan generointi.
+- `.env` – Säilytyspaikka session secretille ja muille salaisuuksille.
+- `app.py` – Sovelluksen entrypoint.
+- `database.db` – Generoitu tietokanta.
+- `requirements.txt` – Ulkoiset kirjastoriippuvuudet.
 
 # Kehitys
 
 ## Sovelluksen käynnistys
 
-Jos `make`-pakettia ei ole vielä asennettu, asenna se komennolla:
-
-```bash
-sudo apt install make
-```
-
 Alusta kehitysympäristö:
 
+Luo virtuaali ympäristö
+
 ```bash
-make setup
+python3 -m venv .venv
 ```
 
-Käynnistä sovellus kehitystilassa:
+Asenna riippuvuudet
 
 ```bash
-make dev
+.venv/bin/pip install -r requirements.txt
 ```
 
-Tai vaihtoehtoisesti ilman debuggausta:
+Luo .env tiedosto ja lisää sinne:
 
 ```bash
-make start
+SECRET_KEY=74ae93c8179cea32ded4403efa7c9ba1729ed26e23b9c5e3027119f3b9a63faf
+```
+
+Käynnistä sovellus kehitystilassa (.env tiedoston kanssa):
+
+```bash
+set -a; . ./.env; set +a; .venv/bin/flask run --debug
 ```
 
 ## Ongelmatilanteet
@@ -69,23 +68,6 @@ make start
 Ongelmatilanteissa ota yhteyttä:
 
 `oskari.anton.sulkakoski@helsinki.fi`
-
-## VS Code -lisäosat
-
-Avaa VS Coden lisäosat:
-
-```text
-Ctrl + Shift + X
-```
-
-Kirjoita hakukenttään:
-
-```text
-@recommended
-```
-
-Asenna **Workspace Recommendations** -otsikon alla näkyvät suositellut lisäosat.
-
 
 # Suorituskyky
 
