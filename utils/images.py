@@ -4,8 +4,7 @@ from uuid import uuid4
 
 from flask import current_app
 
-from services import recipe_service
-
+import recipes as recipe_service
 
 def upload_root():
     """Allow tests to isolate uploads from the application's static directory."""

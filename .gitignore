@@ -3,9 +3,9 @@ todo.txt
 .venv/
 __pycache__/
 *.pyc
-.env
 static/uploads/*
 !static/uploads/recipes/
 static/uploads/recipes/*
 Makefile
 /.vscode
+reset_db.py

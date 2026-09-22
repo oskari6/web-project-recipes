@@ -1,5 +1,3 @@
-![alt text]({5FC884BD-7B8C-4EC5-BAE9-9BBD871A8241}.png)
-
 # Ruokareseptit
 
 - Sovelluksessa käyttäjät pystyvät jakamaan ruokareseptejään. Reseptissä lukee tarvittavat ainekset ja valmistusohje.
@@ -48,7 +46,7 @@ python3 -m venv .venv
 Asenna riippuvuudet
 
 ```bash
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install flask
 ```
 
 Käynnistä sovellus kehitystilassa (.env tiedoston kanssa):
