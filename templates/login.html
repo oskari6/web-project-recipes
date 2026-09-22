@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Login - Recipe App{% endblock %}
 {% block content %}
-<section class="hero-wide" style="background-image: url('/static/images/hero8.jpg');">
+<section class="hero-wide">
     <div class="hero-content">
         <div class="user-page">
-        <div class="user-panel">
-            <h1>Sign In</h1>
+            <div class="user-panel">
+                <h1>Sign In</h1>
                 <form action="/auth/login" method="post" class="flex-column">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <label>
                         <span>Username:</span>
                         <input type="text" name="username" />

@@ -2,12 +2,6 @@
 {% block title %}Recipes - Recipe App{% endblock %}
 
 {% block content %}
-<section class="hero-wide" style="background-image: url('/static/images/hero6.jpg');">
-  <div class="hero-content">
-      <h1 class="padding-1 text-white">Find recipes</h1>
-  </div>
-</section>
-
 <div class="padding-1">
   <form action="{{ url_for('recipes.recipes', page=1) }}" method="get">
     <input

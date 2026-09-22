@@ -3,17 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/css/main.css" />
-    <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/favicon.png') }}"
-    >
+    <link rel="stylesheet" href="/static/main.css" />
     <title>{% block title %}Recipe App{% endblock %}</title>
   </head>
 
   <body>
     <header class="padding-1">
-      <img class="nav-logo" src="/static/images/icon.png" alt="Recipe App logo"/>
       <nav class="container padding-1">
         <a href="/">Home</a>
         {% if session.user_id %}
