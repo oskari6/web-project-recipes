@@ -17,7 +17,7 @@ Tässä pääasiallinen tietokohde on ruokaresepti ja toissijainen tietokohde on
 
 ## Kansiot
 
-- `static/` – Staattiset tiedostot: kuvat, CSS ja fontit.
+- `static/` – Staattiset tiedostot: CSS ja fontit.
 - `templates/` – HTML-templaatit.
 
 ## Tiedostot
@@ -48,7 +48,7 @@ Asenna riippuvuudet
 .venv/bin/pip install flask
 ```
 
-Käynnistä sovellus kehitystilassa (.env tiedoston kanssa):
+Käynnistä sovellus kehitystilassa
 
 ```bash
 .venv/bin/flask run --debug
