@@ -1,6 +1,5 @@
 @import "./users.css";
 @import "./recipes.css";
-@import "./heros.css";
 
 *,
 *::before,
@@ -341,6 +340,37 @@ footer {
   border-color: #a3cfbb;
 }
 
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem var(--space-xl);
+
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  align-items: center;
+  gap: 5rem;
+}
+
+.hero-label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  margin: 0.7rem 0 1.2rem;
+}
+
+.hero p {
+  font-size: var(--space-md);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xl);
+}
+
 .header {
   margin-left: auto;
   white-space: nowrap;
@@ -387,8 +417,16 @@ footer {
   min-width: 200px;
 }
 
+.max-w-500 {
+  max-width: 500px;
+}
+
 .padding-1 {
   padding: var(--space-md);
+}
+
+.margin-bottom-1 {
+  margin: 0 0 var(--space-md) 0;
 }
 
 .text-white {

@@ -17,7 +17,7 @@ Tässä pääasiallinen tietokohde on ruokaresepti ja toissijainen tietokohde on
 
 ## Kansiot
 
-- `static/` – Staattiset tiedostot: CSS ja fontit.
+- `static/` – Staattiset tiedostot: kuvat, CSS ja fontit.
 - `templates/` – HTML-templaatit.
 
 ## Tiedostot

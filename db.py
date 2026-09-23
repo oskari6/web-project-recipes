@@ -72,7 +72,7 @@ def query(sql, params=()):
         con.close()
 
 def seed():
-    """Database seeding module""" 
+    """Database seeding utility function""" 
     password_hash = generate_password_hash("password")
 
     db = sqlite3.connect(DB_PATH)
@@ -226,7 +226,7 @@ def seed():
 
 def reset_database():
     """
-    Database reset function
+    Database reset utility function
     """
     con = get_connection()
 

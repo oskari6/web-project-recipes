@@ -26,8 +26,6 @@ db_utils.init_db()
 # this is for session id:s
 app.secret_key = SECRET_KEY
 
-
-
 def get_csrf_token():
     """
     csrf utility
