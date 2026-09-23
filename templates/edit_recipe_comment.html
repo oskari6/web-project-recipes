@@ -6,7 +6,7 @@
     action="{{ url_for('edit_comment', comment_id=comment.id) }}" 
     method="post"
     class="flex-column">
-    <p>Edit comment</p>
+    <h3 class="margin-bottom-1">Edit comment</h3>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <label for="comment-{{ comment.id }}">Comment</label>
     <textarea
@@ -18,13 +18,15 @@
       class="min-w-500"
     >{{ comment.value }}</textarea>
 
-      <button type="submit" class="button button-primary">
-        Save
-      </button>
+      <div class="flex-center">
+        <a href="#" class="button">
+          Cancel
+        </a>
 
-      <a href="#" class="button">
-        Cancel
-      </a>
+        <button type="submit" class="button button-primary">
+          Save
+        </button>
+      </div>
     </form>
   </div>
 </div>

@@ -4,7 +4,7 @@
   <div class="modal-content">
     <form action="{{ url_for('remove_user') }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    <p>Do you want to delete your user profile? All of the related resources will also be removed</p>
+    <h3 class="margin-bottom-1 flex-wrap max-w-500">Do you want to delete your user profile?<br>All of the related resources will also be removed.</h3>
 
       <button type="submit" class="button-danger">
         Confirm
