@@ -156,7 +156,7 @@ def get_user_recipes(user_id):
     sql = """SELECT id, title, description, ft.name AS food_type,
         servings, preparation_time, created_at, updated_at
         FROM recipes
-        JOIN foodtypes AS ft ON ft.id = recipes.food_type
+        LEFT JOIN food_types AS ft ON ft.id = recipes.food_type_id
         WHERE creator_id = ?
         ORDER BY created_at DESC"""
 

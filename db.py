@@ -16,7 +16,16 @@ def init_db():
     with open("schema.sql", "r", encoding="utf-8") as file:
         connection.executescript(file.read())
 
-    connection.close()
+    try:
+        with connection:
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(recipes)")}
+            for old_name in ("food_type", "dietary_requirement"):
+                if old_name in columns:
+                    connection.execute(
+                        f'ALTER TABLE recipes RENAME COLUMN "{old_name}" TO "{old_name}_id"'
+                    )
+    finally:
+        connection.close()
 
 def get_connection():
     """

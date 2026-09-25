@@ -34,28 +34,28 @@
             value="{{ values.get('title', '') or '' }}"
           >
 
-          <label for="food_type">Food type</label>
-          <select id="food_type" name="food_type">
+          <label for="food_type_id">Food type</label>
+          <select id="food_type_id" name="food_type_id">
             <option value="">Select food type</option>
 
             {% for food_type in food_types %}
               <option
                 value="{{ food_type.id }}"
-                {% if values.get('food_type') == food_type.name %}selected{% endif %}
+                {% if values.get('food_type_id')|string == food_type.id|string %}selected{% endif %}
               >
                 {{ food_type.name }}
               </option>
             {% endfor %}
           </select>
 
-          <label for="dietary_requirement">Dietary requirement</label>
-          <select id="dietary_requirement" name="dietary_requirement">
+          <label for="dietary_requirement_id">Dietary requirement</label>
+          <select id="dietary_requirement_id" name="dietary_requirement_id">
             <option value="">No dietary requirement</option>
 
             {% for requirement in dietary_requirements %}
               <option
                 value="{{ requirement.id }}"
-                {% if values.get('dietary_requirement') == requirement.name %}selected{% endif %}
+                {% if values.get('dietary_requirement_id')|string == requirement.id|string %}selected{% endif %}
               >
                 {{ requirement.name }}
               </option>
@@ -114,6 +114,7 @@
 
             <label>{{ i + 1 }}
             <input
+              type="number"
               name="ingredient_amount"
               value="{{ ingredient.amount if ingredient and ingredient.amount is not none else '' }}"
               placeholder="Amount"

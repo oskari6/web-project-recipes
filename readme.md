@@ -69,7 +69,7 @@ sqlite3 database.db
 Jos tietokanta pitää nollata, komento on:
 
 ```
-.venv/bin/python -c "from db import reset_database; reset_database()
+.venv/bin/python -c "from db import reset_database; reset_database()"
 ```
 
 ## Ongelmatilanteet

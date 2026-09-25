@@ -13,13 +13,14 @@ def get_recipe(recipe_id):
         sqlite3.Row | None: The recipe if found, otherwise None.
     """
     sql = """SELECT r.id, r.title, r.description, r.creator_id,
+                r.food_type_id, r.dietary_requirement_id,
                 ft.name AS food_type, dr.name AS dietary_requirement, r.servings,
                 r.preparation_time, r.created_at, r.updated_at,
                 u.username AS creator_username
              FROM recipes r
              JOIN users u ON u.id = r.creator_id
-             JOIN food_types AS ft ON r.food_type = ft.id
-             JOIN dietary_requirements AS dr ON r.dietary_requirement = dr.id
+             LEFT JOIN food_types AS ft ON r.food_type_id = ft.id
+             LEFT JOIN dietary_requirements AS dr ON r.dietary_requirement_id = dr.id
              WHERE r.id = ?"""
 
     result = db_utils.query(sql, [recipe_id])
@@ -52,8 +53,8 @@ def get_recipes(page, page_size, user_id=None, query=None):
                         LIMIT 1
                     ) AS image_filename
              FROM recipes r
-             JOIN food_types AS ft ON r.food_type = ft.id
-             JOIN dietary_requirements AS dr ON r.dietary_requirement = dr.id
+             LEFT JOIN food_types AS ft ON r.food_type_id = ft.id
+             LEFT JOIN dietary_requirements AS dr ON r.dietary_requirement_id = dr.id
              JOIN users u ON u.id = r.creator_id
           """
 
@@ -84,8 +85,8 @@ def create_recipe(
     title,
     description,
     creator_id,
-    food_type=None,
-    dietary_requirement=None,
+    food_type_id=None,
+    dietary_requirement_id=None,
     servings=None,
     preparation_time=None,
     con=None):
@@ -96,8 +97,8 @@ def create_recipe(
         title (str): The recipe title.
         description (str): The recipe description.
         creator_id (int): The ID of the recipe creator.
-        food_type (str | None): The type of food.
-        dietary_requirement (int | None): Dietary requirements.
+        food_type_id (int | None): The food type ID.
+        dietary_requirement_id (int | None): Dietary requirements.
         servings (int | None): Number of servings.
         preparation_time (int | None): Preparation time in minutes.
 
@@ -105,16 +106,16 @@ def create_recipe(
         int: The ID of the created recipe.
     """
     sql = """INSERT INTO recipes
-                (title, description, creator_id, food_type,
-                 dietary_requirement, servings, preparation_time)
+                (title, description, creator_id, food_type_id,
+                 dietary_requirement_id, servings, preparation_time)
              VALUES (?, ?, ?, ?, ?, ?, ?)"""
 
     return db_utils.execute(sql, [
         title,
         description,
         creator_id,
-        food_type,
-        dietary_requirement,
+        food_type_id,
+        dietary_requirement_id,
         servings,
         preparation_time
     ], con)
@@ -123,8 +124,8 @@ def update_recipe(
     recipe_id,
     title,
     description,
-    food_type=None,
-    dietary_requirement=None,
+    food_type_id=None,
+    dietary_requirement_id=None,
     servings=None,
     preparation_time=None,
     con=None
@@ -136,16 +137,16 @@ def update_recipe(
         recipe_id (int): The ID of the recipe.
         title (str): The new title.
         description (str): The new description.
-        food_type (str | None): The new food type.
-        dietary_requirement (int | None): New dietary requirements.
+        food_type_id (int | None): The new food type ID.
+        dietary_requirement_id (int | None): New dietary requirements.
         servings (int | None): The new number of servings.
         preparation_time (int | None): The new preparation time.
     """
     sql = """UPDATE recipes
              SET title = ?,
                  description = ?,
-                 food_type = ?,
-                 dietary_requirement = ?,
+                 food_type_id = ?,
+                 dietary_requirement_id = ?,
                  servings = ?,
                  preparation_time = ?,
                  updated_at = CURRENT_TIMESTAMP
@@ -154,8 +155,8 @@ def update_recipe(
     db_utils.execute(sql, [
         title,
         description,
-        food_type,
-        dietary_requirement,
+        food_type_id,
+        dietary_requirement_id,
         servings,
         preparation_time,
         recipe_id

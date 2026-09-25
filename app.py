@@ -344,10 +344,10 @@ def save_recipe(found_recipe=None):
         return recipe_form(found_recipe, error), 400
 
     fields = {key: request.form.get(key, "").strip() for key in (
-        "title", "description", "food_type", "dietary_requirement",
+        "title", "description", "food_type_id", "dietary_requirement_id",
         "servings", "preparation_time"
     )}
-    for key in ("servings", "preparation_time"):
+    for key in ("food_type_id", "dietary_requirement_id", "servings", "preparation_time"):
         fields[key] = int(fields[key]) if fields[key] else None
     con = db_utils.get_connection()
     saved_files = []

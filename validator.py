@@ -84,11 +84,11 @@ def validate_recipe(form):
         errors(str | None): possible errors
     """
     food_types = [
-        row["id"] for row in recipe_service.get_food_types()
+        str(row["id"]) for row in recipe_service.get_food_types()
     ]
 
     dietary_requirements = [
-        row["id"] for row in recipe_service.get_dietary_requirements()
+        str(row["id"]) for row in recipe_service.get_dietary_requirements()
     ]
 
     for name, limit in (("title", 200), ("description", 10000)):
@@ -96,8 +96,8 @@ def validate_recipe(form):
         if not value or len(value) > limit:
             return f"{name.capitalize()} must contain 1–{limit} characters."
     for name, choices in (
-        ("food_type", food_types),
-        ("dietary_requirement", dietary_requirements),
+        ("food_type_id", food_types),
+        ("dietary_requirement_id", dietary_requirements),
     ):
         if form.get(name, "") not in ["", *choices]:
             return f"Invalid {name}."

@@ -48,16 +48,16 @@ for i in range(1, RECIPE_COUNT + 1):
 
     cursor = db.execute(
         """INSERT INTO recipes
-            (title, description, creator_id, food_type,
-            dietary_requirements, servings, preparation_time)
+            (title, description, creator_id, food_type_id,
+            dietary_requirement_id, servings, preparation_time)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         [
             f"Recipe {i}",
             f"Description for recipe {i}",
             creator_id,
-            random.randint(1, len(food_types)),
-            random.randint(1, len(dietary_requirements)),
+            random.choice(food_types)[0],
+            random.choice(dietary_requirements)[0],
             random.randint(1, 8),
             random.randint(5, 120)
         ]
