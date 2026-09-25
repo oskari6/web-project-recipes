@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 
 from flask import abort, flash, g, redirect, request, session, render_template, url_for, Flask
 from images import save_profile_picture, remove_profile_file, remove_recipe_files,save_recipe_images
-from config import DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS, SECRET_KEY
+from config import UNITS, SECRET_KEY
 import db as db_utils
 import validator
 import users as user_service
@@ -309,6 +309,9 @@ def recipe_form(found_recipe=None, error=None):
     ingredients = recipe_service.get_ingredients(recipe_id) if recipe_id else []
     steps = recipe_service.get_recipe_steps(recipe_id) if recipe_id else []
     values = dict(found_recipe) if found_recipe else {}
+    food_types = recipe_service.get_food_types()
+    dietary_requirements = recipe_service.get_dietary_requirements()
+
     if request.method == "POST":
         values.update(request.form.to_dict())
         ingredients = [{"ingredient": name, "amount": amount, "unit": unit}
@@ -324,7 +327,8 @@ def recipe_form(found_recipe=None, error=None):
         recipe_ingredients=ingredients,
         recipe_steps=steps,
         recipe_images=recipe_service.get_images(recipe_id) if recipe_id else [],
-        food_types=FOOD_TYPES, dietary_requirements=DIETARY_REQUIREMENTS,
+        food_types=food_types,
+        dietary_requirements=dietary_requirements,
         units=UNITS, error=error
     )
 
@@ -340,7 +344,7 @@ def save_recipe(found_recipe=None):
         return recipe_form(found_recipe, error), 400
 
     fields = {key: request.form.get(key, "").strip() for key in (
-        "title", "description", "food_type", "dietary_requirements",
+        "title", "description", "food_type", "dietary_requirement",
         "servings", "preparation_time"
     )}
     for key in ("servings", "preparation_time"):

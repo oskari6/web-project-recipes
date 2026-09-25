@@ -40,24 +40,24 @@
 
             {% for food_type in food_types %}
               <option
-                value="{{ food_type }}"
-                {% if values.get('food_type') == food_type %}selected{% endif %}
+                value="{{ food_type.id }}"
+                {% if values.get('food_type') == food_type.name %}selected{% endif %}
               >
-                {{ food_type }}
+                {{ food_type.name }}
               </option>
             {% endfor %}
           </select>
 
-          <label for="dietary_requirements">Dietary requirement</label>
-          <select id="dietary_requirements" name="dietary_requirements">
+          <label for="dietary_requirement">Dietary requirement</label>
+          <select id="dietary_requirement" name="dietary_requirement">
             <option value="">No dietary requirement</option>
 
             {% for requirement in dietary_requirements %}
               <option
-                value="{{ requirement }}"
-                {% if values.get('dietary_requirements') == requirement %}selected{% endif %}
+                value="{{ requirement.id }}"
+                {% if values.get('dietary_requirement') == requirement.name %}selected{% endif %}
               >
-                {{ requirement }}
+                {{ requirement.name }}
               </option>
             {% endfor %}
           </select>

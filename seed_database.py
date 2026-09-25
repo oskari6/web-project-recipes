@@ -4,7 +4,6 @@ import random
 import sqlite3
 from pathlib import Path
 from werkzeug.security import generate_password_hash
-from config import DIETARY_REQUIREMENTS, FOOD_TYPES
 
 DB_PATH = Path("database.db")
 
@@ -41,6 +40,9 @@ db.executemany(
     users
 )
 
+food_types = db.execute("SELECT id FROM food_types").fetchall()
+dietary_requirements = db.execute("SELECT id FROM dietary_requirements").fetchall()
+
 for i in range(1, RECIPE_COUNT + 1):
     creator_id = random.randint(1, USER_COUNT)
 
@@ -54,8 +56,8 @@ for i in range(1, RECIPE_COUNT + 1):
             f"Recipe {i}",
             f"Description for recipe {i}",
             creator_id,
-            random.choice(FOOD_TYPES),
-            random.choice(DIETARY_REQUIREMENTS),
+            random.randint(1, len(food_types)),
+            random.randint(1, len(dietary_requirements)),
             random.randint(1, 8),
             random.randint(5, 120)
         ]

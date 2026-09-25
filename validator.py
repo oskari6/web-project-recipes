@@ -4,8 +4,8 @@ import math
 from werkzeug.security import check_password_hash
 
 import users as user_service
-from config import (DIETARY_REQUIREMENTS, FOOD_TYPES, UNITS)
-
+import recipes as recipe_service
+from config import (UNITS)
 
 def validate_user(username, password, password_confirm, user_id=None):
     """
@@ -83,14 +83,24 @@ def validate_recipe(form):
     Returns:
         errors(str | None): possible errors
     """
+    food_types = [
+        row["id"] for row in recipe_service.get_food_types()
+    ]
+
+    dietary_requirements = [
+        row["id"] for row in recipe_service.get_dietary_requirements()
+    ]
+
     for name, limit in (("title", 200), ("description", 10000)):
         value = form.get(name, "").strip()
         if not value or len(value) > limit:
             return f"{name.capitalize()} must contain 1–{limit} characters."
-    for name, choices in (("food_type", FOOD_TYPES),
-        ("dietary_requirements", DIETARY_REQUIREMENTS)):
+    for name, choices in (
+        ("food_type", food_types),
+        ("dietary_requirement", dietary_requirements),
+    ):
         if form.get(name, "") not in ["", *choices]:
-            return f"Invalid {name.replace('_', ' ')}."
+            return f"Invalid {name}."
     for name in ("servings", "preparation_time"):
         if not is_positive_integer(form.get(name, "")):
             return f"{name.replace('_', ' ').capitalize()} must be a positive whole number."

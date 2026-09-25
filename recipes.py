@@ -13,11 +13,13 @@ def get_recipe(recipe_id):
         sqlite3.Row | None: The recipe if found, otherwise None.
     """
     sql = """SELECT r.id, r.title, r.description, r.creator_id,
-                    r.food_type, r.dietary_requirements, r.servings,
-                    r.preparation_time, r.created_at, r.updated_at,
-                    u.username AS creator_username
+                ft.name AS food_type, dr.name AS dietary_requirement, r.servings,
+                r.preparation_time, r.created_at, r.updated_at,
+                u.username AS creator_username
              FROM recipes r
              JOIN users u ON u.id = r.creator_id
+             JOIN food_types AS ft ON r.food_type = ft.id
+             JOIN dietary_requirements AS dr ON r.dietary_requirement = dr.id
              WHERE r.id = ?"""
 
     result = db_utils.query(sql, [recipe_id])
@@ -38,7 +40,7 @@ def get_recipes(page, page_size, user_id=None, query=None):
         list[sqlite3.Row]: The recipes on the requested page.
     """
     sql = """SELECT r.id, r.title, r.description, r.creator_id,
-                    r.food_type, r.dietary_requirements,
+                    ft.name AS food_type, dr.name AS dietary_requirement,
                     r.servings, r.preparation_time,
                     r.created_at, r.updated_at,
                     u.username AS creator_username,
@@ -50,6 +52,8 @@ def get_recipes(page, page_size, user_id=None, query=None):
                         LIMIT 1
                     ) AS image_filename
              FROM recipes r
+             JOIN food_types AS ft ON r.food_type = ft.id
+             JOIN dietary_requirements AS dr ON r.dietary_requirement = dr.id
              JOIN users u ON u.id = r.creator_id
           """
 
@@ -81,7 +85,7 @@ def create_recipe(
     description,
     creator_id,
     food_type=None,
-    dietary_requirements=None,
+    dietary_requirement=None,
     servings=None,
     preparation_time=None,
     con=None):
@@ -93,7 +97,7 @@ def create_recipe(
         description (str): The recipe description.
         creator_id (int): The ID of the recipe creator.
         food_type (str | None): The type of food.
-        dietary_requirements (str | None): Dietary requirements.
+        dietary_requirement (int | None): Dietary requirements.
         servings (int | None): Number of servings.
         preparation_time (int | None): Preparation time in minutes.
 
@@ -102,7 +106,7 @@ def create_recipe(
     """
     sql = """INSERT INTO recipes
                 (title, description, creator_id, food_type,
-                 dietary_requirements, servings, preparation_time)
+                 dietary_requirement, servings, preparation_time)
              VALUES (?, ?, ?, ?, ?, ?, ?)"""
 
     return db_utils.execute(sql, [
@@ -110,7 +114,7 @@ def create_recipe(
         description,
         creator_id,
         food_type,
-        dietary_requirements,
+        dietary_requirement,
         servings,
         preparation_time
     ], con)
@@ -120,7 +124,7 @@ def update_recipe(
     title,
     description,
     food_type=None,
-    dietary_requirements=None,
+    dietary_requirement=None,
     servings=None,
     preparation_time=None,
     con=None
@@ -133,7 +137,7 @@ def update_recipe(
         title (str): The new title.
         description (str): The new description.
         food_type (str | None): The new food type.
-        dietary_requirements (str | None): New dietary requirements.
+        dietary_requirement (int | None): New dietary requirements.
         servings (int | None): The new number of servings.
         preparation_time (int | None): The new preparation time.
     """
@@ -141,7 +145,7 @@ def update_recipe(
              SET title = ?,
                  description = ?,
                  food_type = ?,
-                 dietary_requirements = ?,
+                 dietary_requirement = ?,
                  servings = ?,
                  preparation_time = ?,
                  updated_at = CURRENT_TIMESTAMP
@@ -151,7 +155,7 @@ def update_recipe(
         title,
         description,
         food_type,
-        dietary_requirements,
+        dietary_requirement,
         servings,
         preparation_time,
         recipe_id
@@ -662,3 +666,25 @@ def comment_count(recipe_id):
     return db_utils.query(
         "SELECT COUNT(*) FROM recipe_comments WHERE recipe_id = ?", [recipe_id]
     )[0][0]
+
+def get_food_types():
+    """
+    Return all food types.
+
+    Returns:
+        list[sqlite3.Row]: The food types
+    """
+    sql = "SELECT id, name FROM food_types"
+
+    return db_utils.query(sql)
+
+def get_dietary_requirements():
+    """
+    Return all dietary requirements.
+
+    Returns:
+        list[sqlite3.Row]: The dietary requirements
+    """
+    sql = "SELECT id, name FROM dietary_requirements"
+
+    return db_utils.query(sql)

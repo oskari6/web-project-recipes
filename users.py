@@ -153,11 +153,12 @@ def get_user_recipes(user_id):
     Returns:
         list[sqlite3.Row]: The user's recipes.
     """
-    sql = """SELECT id, title, description, food_type,
-                    servings, preparation_time, created_at, updated_at
-             FROM recipes
-             WHERE creator_id = ?
-             ORDER BY created_at DESC"""
+    sql = """SELECT id, title, description, ft.name AS food_type,
+        servings, preparation_time, created_at, updated_at
+        FROM recipes
+        JOIN foodtypes AS ft ON ft.id = recipes.food_type
+        WHERE creator_id = ?
+        ORDER BY created_at DESC"""
 
     return db_utils.query(sql, [user_id])
 

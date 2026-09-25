@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS recipes (
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     creator_id INTEGER NOT NULL,
-    food_type TEXT,
-    dietary_requirements TEXT,
+    food_type INTEGER,
+    dietary_requirement INTEGER,
     servings INTEGER,
     preparation_time INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -65,6 +65,30 @@ CREATE TABLE IF NOT EXISTS recipe_ratings (
     FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
     UNIQUE (creator_id, recipe_id)
 );
+
+CREATE TABLE IF NOT EXISTS food_types (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dietary_requirements (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL
+);
+
+INSERT OR IGNORE INTO food_types (name) VALUES
+    ('Breakfast'),
+    ('Lunch'),
+    ('Dinner'),
+    ('Dessert'),
+    ('Snack');
+
+INSERT OR IGNORE INTO dietary_requirements (name) VALUES
+    ('Vegetarian'),
+    ('Vegan'),
+    ('Gluten-free'),
+    ('Keto'),
+    ('Carnivore');
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_recipes_creator
