@@ -57,7 +57,7 @@ Käynnistä sovellus kehitystilassa
 Jos haluat enemmän dataa tietokantaan (db.py USER_COUNT ja RECIPE_COUNT numeroita saa vaihtaa):
 
 ```bash
-.venv/bin/python -c "from db import seed; seed()"
+.venv/bin/python -m seed_database.py
 ```
 
 tietokantaan pääsee käsiksi komennolla:
