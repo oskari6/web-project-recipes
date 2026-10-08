@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from flask import current_app
 
-import recipes as recipe_service
+import recipes
 
 def upload_root():
     """Allow tests to isolate uploads from the application's static directory."""
@@ -51,7 +51,7 @@ def save_recipe_images(recipe_id, images, con, saved_files):
         path = directory / filename
         saved_files.append(path)
         image.save(path)
-        recipe_service.add_image(recipe_id, filename, con)
+        recipes.add_image(recipe_id, filename, con)
 
 
 def remove_file(path):

@@ -14,8 +14,8 @@ from images import save_profile_picture, remove_profile_file, remove_recipe_file
 from config import UNITS, SECRET_KEY
 import db as db_utils
 import validator
-import users as user_service
-import recipes as recipe_service
+import users
+import recipes
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
@@ -61,7 +61,7 @@ def require_login(func):
     def wrapper(*args, **kwargs):
         if "user_id" not in session:
             abort(401)
-        if not user_service.get_user(session["user_id"]):
+        if not users.get_user(session["user_id"]):
             session.clear()
             abort(401)
 
@@ -177,7 +177,7 @@ def register():
 
     filename = save_profile_picture(image)
     try:
-        user_service.create_user(
+        users.create_user(
             username,
             generate_password_hash(password),
             filename
@@ -211,7 +211,7 @@ def login():
             error=error
         ), 400
 
-    found_user = user_service.get_user_by_username(username)
+    found_user = users.get_user_by_username(username)
     session.clear()
     session["user_id"] = found_user["id"]
     session["username"] = username
@@ -239,7 +239,7 @@ def recipes(page=1):
     page_size = 10
     query = request.args.get("query", "").strip()
 
-    recipe_count = recipe_service.recipe_count(query=query)
+    recipe_count = recipes.recipe_count(query=query)
     page_count = math.ceil(recipe_count / page_size)
     page_count = max(page_count, 1)
 
@@ -251,7 +251,7 @@ def recipes(page=1):
     return render_template("recipes.html",
         page=page,
         page_count=page_count,
-        recipes=recipe_service.get_recipes(page, page_size, query=query),
+        recipes=recipes.get_recipes(page, page_size, query=query),
         query=query
     )
 
@@ -263,27 +263,27 @@ def recipe(recipe_id):
     Args:
         recipe_id(int) : id of recipe
     """
-    found_recipe = recipe_service.get_recipe(recipe_id)
+    found_recipe = recipes.get_recipe(recipe_id)
     if not found_recipe:
         abort(404)
     user_rating = None
 
     if session.get("user_id"):
-        user_rating = recipe_service.get_rating(
+        user_rating = recipes.get_rating(
             recipe_id,
             session["user_id"]
         )
-    ingredients = recipe_service.get_ingredients(recipe_id)
-    recipe_steps = recipe_service.get_recipe_steps(recipe_id)
-    images = recipe_service.get_images(recipe_id)
-    avg_rating = recipe_service.get_average_rating(recipe_id)
-    comment_pages = max(1, math.ceil(recipe_service.comment_count(recipe_id) / 10))
+    ingredients = recipes.get_ingredients(recipe_id)
+    recipe_steps = recipes.get_recipe_steps(recipe_id)
+    images = recipes.get_images(recipe_id)
+    avg_rating = recipes.get_average_rating(recipe_id)
+    comment_pages = max(1, math.ceil(recipes.comment_count(recipe_id) / 10))
     rating_pages = max(1, math.ceil(avg_rating["rating_count"] / 10))
     comment_page = min(comment_pages, max(1, request.args.get("comment_page", 1, type=int)))
     rating_page = min(rating_pages, max(1, request.args.get("rating_page", 1, type=int)))
-    comments = recipe_service.get_comments(recipe_id, comment_page)
-    ratings = recipe_service.get_ratings(recipe_id, rating_page)
-    found_user = user_service.get_user(found_recipe["creator_id"])
+    comments = recipes.get_comments(recipe_id, comment_page)
+    ratings = recipes.get_ratings(recipe_id, rating_page)
+    found_user = users.get_user(found_recipe["creator_id"])
 
     return render_template(
         "recipe.html",
@@ -306,11 +306,11 @@ def recipe(recipe_id):
 def recipe_form(found_recipe=None, error=None):
     """Render recipe fields, retaining submitted text after validation errors."""
     recipe_id = found_recipe["id"] if found_recipe else None
-    ingredients = recipe_service.get_ingredients(recipe_id) if recipe_id else []
-    steps = recipe_service.get_recipe_steps(recipe_id) if recipe_id else []
+    ingredients = recipes.get_ingredients(recipe_id) if recipe_id else []
+    steps = recipes.get_recipe_steps(recipe_id) if recipe_id else []
     values = dict(found_recipe) if found_recipe else {}
-    food_types = recipe_service.get_food_types()
-    dietary_requirements = recipe_service.get_dietary_requirements()
+    food_types = recipes.get_food_types()
+    dietary_requirements = recipes.get_dietary_requirements()
 
     if request.method == "POST":
         values.update(request.form.to_dict())
@@ -326,7 +326,7 @@ def recipe_form(found_recipe=None, error=None):
         values=values,
         recipe_ingredients=ingredients,
         recipe_steps=steps,
-        recipe_images=recipe_service.get_images(recipe_id) if recipe_id else [],
+        recipe_images=recipes.get_images(recipe_id) if recipe_id else [],
         food_types=food_types,
         dietary_requirements=dietary_requirements,
         units=UNITS, error=error
@@ -338,7 +338,7 @@ def save_recipe(found_recipe=None):
     recipe_id = found_recipe["id"] if found_recipe else None
     images = request.files.getlist("images")
     removed_ids = request.form.getlist("remove_image")
-    existing_images = recipe_service.get_images(recipe_id) if recipe_id else []
+    existing_images = recipes.get_images(recipe_id) if recipe_id else []
     error = validator.validate_recipe(request.form)
     if error:
         return recipe_form(found_recipe, error), 400
@@ -353,19 +353,19 @@ def save_recipe(found_recipe=None):
     saved_files = []
     try:
         if found_recipe:
-            recipe_service.update_recipe(recipe_id, **fields, con=con)
+            recipes.update_recipe(recipe_id, **fields, con=con)
         else:
-            recipe_id = recipe_service.create_recipe(
+            recipe_id = recipes.create_recipe(
                 **fields, creator_id=session["user_id"], con=con
             )
-        recipe_service.create_ingredients(
+        recipes.create_ingredients(
             recipe_id, request.form.getlist("ingredient"),
             request.form.getlist("ingredient_amount"),
             request.form.getlist("ingredient_unit"), con
         )
-        recipe_service.create_recipe_steps(recipe_id, request.form.getlist("recipe_step"), con)
+        recipes.create_recipe_steps(recipe_id, request.form.getlist("recipe_step"), con)
         for image_id in removed_ids:
-            recipe_service.remove_image(recipe_id, image_id, con)
+            recipes.remove_image(recipe_id, image_id, con)
         save_recipe_images(recipe_id, images, con, saved_files)
         con.commit()
     except Exception:
@@ -398,7 +398,7 @@ def owned_recipe(recipe_id):
     Returns:
         found_recipe(recipe): recipe that's found
     """
-    found_recipe = recipe_service.get_recipe(recipe_id)
+    found_recipe = recipes.get_recipe(recipe_id)
     if not found_recipe:
         abort(404)
     if found_recipe["creator_id"] != session["user_id"]:
@@ -427,8 +427,8 @@ def remove_recipe(recipe_id):
         recipe_id(int) : id of recipe
     """
     owned_recipe(recipe_id)
-    images = recipe_service.get_images(recipe_id)
-    recipe_service.delete_recipe(recipe_id)
+    images = recipes.get_images(recipe_id)
+    recipes.delete_recipe(recipe_id)
     remove_recipe_files(recipe_id, [image["file_name"] for image in images])
     return redirect(url_for("recipes", page=1))
 
@@ -442,14 +442,14 @@ def create_comment(recipe_id):
     Args:
         recipe_id(int) : id of recipe
     """
-    if not recipe_service.get_recipe(recipe_id):
+    if not recipes.get_recipe(recipe_id):
         abort(404)
 
     comment = request.form.get("comment", "").strip()
     error = validator.validate_comment(comment)
     if error:
         abort(400, description=error)
-    recipe_service.add_comment(recipe_id, session["user_id"], comment)
+    recipes.add_comment(recipe_id, session["user_id"], comment)
 
     return redirect(url_for("recipe", recipe_id=recipe_id))
 
@@ -463,7 +463,7 @@ def edit_comment(comment_id):
     Args:
         comment_id(int) : id of comment
     """
-    comment = recipe_service.get_comment_by_id(comment_id)
+    comment = recipes.get_comment_by_id(comment_id)
     if not comment:
         abort(404)
 
@@ -475,7 +475,7 @@ def edit_comment(comment_id):
     error = validator.validate_comment(value)
     if error:
         abort(400, description=error)
-    recipe_service.update_comment(comment_id, value)
+    recipes.update_comment(comment_id, value)
     return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
@@ -488,7 +488,7 @@ def remove_comment(comment_id):
     Args:
         comment(int) : id of comment
     """
-    comment = recipe_service.get_comment_by_id(comment_id)
+    comment = recipes.get_comment_by_id(comment_id)
     if not comment:
         abort(404)
 
@@ -496,7 +496,7 @@ def remove_comment(comment_id):
         abort(403)
 
     recipe_id = comment["recipe_id"]
-    recipe_service.delete_comment(comment_id)
+    recipes.delete_comment(comment_id)
     return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
@@ -509,19 +509,19 @@ def create_rating(recipe_id):
     Args:
         recipe_id(int) : id of recipe
     """
-    if not recipe_service.get_recipe(recipe_id):
+    if not recipes.get_recipe(recipe_id):
         abort(404)
 
-    if recipe_service.get_recipe(recipe_id)["creator_id"] == session["user_id"]:
+    if recipes.get_recipe(recipe_id)["creator_id"] == session["user_id"]:
         abort(403)
     rating = request.form.get("rating", "")
     error = validator.validate_rating(rating)
+    if recipes.get_rating(recipe_id, session["user_id"]):
+        error.append("You have already rated this recipe. Edit your rating instead.")
     if error:
         abort(400, description=error)
-    if recipe_service.get_rating(recipe_id, session["user_id"]):
-        abort(400, description="You have already rated this recipe. Edit your rating instead.")
     try:
-        recipe_service.add_rating(recipe_id, session["user_id"], int(rating))
+        recipes.add_rating(recipe_id, session["user_id"], int(rating))
     except sqlite3.IntegrityError:
         abort(400, description="Unable to add this rating. It may already exist.")
     return redirect(url_for("recipe", recipe_id=recipe_id))
@@ -536,20 +536,20 @@ def edit_rating(rating_id):
     Args:
         rating_id(int) : id of recipe rating
     """
-    rating = recipe_service.get_rating_by_id(rating_id)
+    rating = recipes.get_rating_by_id(rating_id)
     if not rating:
         abort(404)
 
     if rating["creator_id"] != session["user_id"]:
         abort(403)
     recipe_id = rating["recipe_id"]
-    if recipe_service.get_recipe(recipe_id)["creator_id"] == session["user_id"]:
+    if recipes.get_recipe(recipe_id)["creator_id"] == session["user_id"]:
         abort(403)
     value = request.form.get("rating", "")
     error = validator.validate_rating(value)
     if error:
         abort(400, description=error)
-    recipe_service.update_rating(rating_id, int(value))
+    recipes.update_rating(rating_id, int(value))
     return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
@@ -563,7 +563,7 @@ def users(page=1):
     page_size = 10
     query = request.args.get("query", "").strip()
 
-    user_count = user_service.user_count(query)
+    user_count = users.user_count(query)
     page_count = math.ceil(user_count / page_size)
     page_count = max(page_count, 1)
 
@@ -574,7 +574,7 @@ def users(page=1):
 
     return render_template(
         "users.html",
-        users=user_service.get_users(page, page_size, query),
+        users=users.get_users(page, page_size, query),
         page=page,
         query=query,
         page_count=page_count,
@@ -590,17 +590,17 @@ def user(user_id, page):
         page(int) : page number for recipes
     """
     page_size = 10
-    recipe_count = recipe_service.recipe_count(user_id)
+    recipe_count = recipes.recipe_count(user_id)
     page_count = math.ceil(recipe_count / page_size)
     page_count = max(page_count, 1)
 
-    found_user = user_service.get_user(user_id)
+    found_user = users.get_user(user_id)
     if not found_user:
         abort(404)
 
     if page < 1 or page > page_count:
         return redirect(url_for("user", user_id=user_id, page=max(1, min(page, page_count))))
-    found_recipes = recipe_service.get_recipes(page, page_size, user_id)
+    found_recipes = recipes.get_recipes(page, page_size, user_id)
     return render_template(
         "user.html",
         user=found_user,
@@ -619,7 +619,7 @@ def edit_user(user_id):
     Args:
         user_id(int) : id of user
     """
-    found_user = user_service.get_user(user_id)
+    found_user = users.get_user(user_id)
 
     if not found_user:
         abort(404)
@@ -646,11 +646,11 @@ def edit_user(user_id):
     password_hash = (
         generate_password_hash(password)
         if password
-        else user_service.get_user_password_hash(user_id)["password_hash"]
+        else users.get_user_password_hash(user_id)["password_hash"]
     )
 
     try:
-        user_service.update_user(
+        users.update_user(
             user_id, username, password_hash, filename or found_user["profile_picture_filename"]
         )
     except sqlite3.IntegrityError:
@@ -676,10 +676,10 @@ def remove_user():
     """
     Remove user route
     """
-    found_user = user_service.get_user(session["user_id"])
-    images = [(recipe["id"], recipe_service.get_images(recipe["id"]))
-              for recipe in user_service.get_user_recipes(session["user_id"])]
-    user_service.delete_user(session["user_id"])
+    found_user = users.get_user(session["user_id"])
+    images = [(recipe["id"], recipes.get_images(recipe["id"]))
+              for recipe in users.get_user_recipes(session["user_id"])]
+    users.delete_user(session["user_id"])
     for recipe_id, recipe_images in images:
         remove_recipe_files(recipe_id, [image["file_name"] for image in recipe_images])
     if found_user:

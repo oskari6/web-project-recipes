@@ -12,5 +12,6 @@ validator.py:108:0: R0911: Too many return statements (8/6) (too-many-return-sta
 Your code has been rated at 9.91/10
 
 Yhteenveto
-- services.recipe_service, liian paljon argumentteja funktioihin mutta luokan tai objektin tekeminen refaktorointina vaikuttaa overkillilta
+
+- recipes, liian paljon argumentteja funktioihin mutta luokan tai objektin tekeminen refaktorointina vaikuttaa overkillilta
 - validator liian monta return statementtia kun validoidaan montaa eri asiaa validaattorissa, ei ylity paljolla niin en monimutkaistattanut lisäfunktioilla
