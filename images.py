@@ -8,7 +8,7 @@ import recipes
 
 def upload_root():
     """Allow tests to isolate uploads from the application's static directory."""
-    return Path(current_app.config.get("UPLOAD_FOLDER", "static/uploads"))
+    return Path(current_app.config.get("UPLOAD_FOLDER", "uploads"))
 
 
 def save_profile_picture(image):

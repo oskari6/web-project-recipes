@@ -3,8 +3,8 @@ todo.txt
 .venv/
 __pycache__/
 *.pyc
-static/uploads/*
-!static/uploads/recipes/
-static/uploads/recipes/*
+uploads/*
+!uploads/recipes/
+uploads/recipes/*
 Makefile
 /.vscode

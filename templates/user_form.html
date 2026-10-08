@@ -22,7 +22,7 @@
       {% if editing and user.profile_picture_filename %}
         <div class="profile-picture-preview">
           <img
-            src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
+            src="{{ url_for('uploaded_file', filename='users/' ~ user.profile_picture_filename) }}"
             alt="{{ user.username }}'s profile picture"
           >
         </div>

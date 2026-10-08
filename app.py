@@ -1,7 +1,6 @@
 """App entry point"""
 
 from datetime import datetime
-import time
 import math
 import sqlite3
 from functools import wraps
@@ -9,8 +8,8 @@ import secrets
 import markupsafe
 from werkzeug.security import generate_password_hash
 
-from flask import abort, flash, g, redirect, request, session, render_template, url_for, Flask
-from images import save_profile_picture, remove_profile_file, remove_recipe_files,save_recipe_images
+from flask import abort, flash, redirect, request, send_from_directory, session, render_template, url_for, Flask
+from images import save_profile_picture, remove_profile_file, remove_recipe_files,save_recipe_images, upload_root
 from config import UNITS, SECRET_KEY
 import db as db_utils
 import validator
@@ -95,22 +94,22 @@ def inject_csrf_token():
     """
     return {"csrf_token": get_csrf_token()}
 
-# performance metrics
-@app.before_request
-def before_request():
-    """
-    Permomance metrics
-    """
-    g.start_time = time.perf_counter()
+# performance metrics, uncomment to enable
+# @app.before_request
+# def before_request():
+#     """
+#     Permomance metrics
+#     """
+#     g.start_time = time.perf_counter()
 
-@app.after_request
-def after_request(response):
-    """
-    Permomance metrics
-    """
-    elapsed_time = time.perf_counter() - g.start_time
-    print(f"{request.method} {request.path}: {elapsed_time:.3f}s")
-    return response
+# @app.after_request
+# def after_request(response):
+#     """
+#     Permomance metrics
+#     """
+#     elapsed_time = time.perf_counter() - g.start_time
+#     print(f"{request.method} {request.path}: {elapsed_time:.3f}s")
+#     return response
 
 # entry point
 @app.route("/")
@@ -229,8 +228,8 @@ def logout():
     return redirect(url_for("home"))
 
 
-@app.route("/recipes/<int:page>")
-def recipes(page=1):
+@app.route("/recipes/<int:page>", endpoint="recipes")
+def list_recipes(page=1):
     """
     Recipes route
     Args:
@@ -553,8 +552,8 @@ def edit_rating(rating_id):
     return redirect(url_for("recipe", recipe_id=recipe_id))
 
 
-@app.route("/users/<int:page>")
-def users(page=1):
+@app.route("/users/<int:page>", endpoint="users")
+def list_users(page=1):
     """
     Users route
     Args:
@@ -686,3 +685,10 @@ def remove_user():
         remove_profile_file(found_user["profile_picture_filename"])
     session.clear()
     return redirect(url_for("home"))
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    """
+    Upload files route
+    """
+    return send_from_directory(upload_root().resolve(), filename)

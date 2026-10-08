@@ -18,7 +18,7 @@
       {% if user.profile_picture_filename %}
           <img
             class="user-avatar"
-            src="{{ url_for('static', filename='uploads/users/' ~ user.profile_picture_filename) }}"
+            src="{{ url_for('uploaded_file', filename='users/' ~ user.profile_picture_filename) }}"
             alt="{{ user.username }}"
           >
         {% else %}
