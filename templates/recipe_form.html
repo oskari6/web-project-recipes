@@ -13,7 +13,7 @@
 {% block content %}
 <div class="container padding-1">
 
-  <form
+  <form novalidate
     class="recipe-panel"
     action="{{ '/recipes/edit/' ~ recipe.id if editing else '/recipes/create' }}"
     method="post"

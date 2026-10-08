@@ -4,7 +4,7 @@
 <div class="user-page">
     <div class="user-panel">
         <h1>Sign In</h1>
-        <form action="/auth/login" method="post" class="flex-column">
+        <form novalidate action="/auth/login" method="post" class="flex-column">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <label>
                 <span>Username:</span>

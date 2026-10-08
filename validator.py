@@ -1,10 +1,11 @@
 """Server-side validation shared by creation and update routes."""
 import math
+from itertools import zip_longest
 
 from werkzeug.security import check_password_hash
 
-import users as user_service
-import recipes as recipe_service
+import users
+import recipes
 from config import (UNITS)
 
 def validate_user(username, password, password_confirm, user_id=None):
@@ -16,20 +17,21 @@ def validate_user(username, password, password_confirm, user_id=None):
         password_confirm(str): password confirmation
         user_id(int): optional user id
     Returns:
-        errors(str | None): possible errors
+        errors(list[str]): all validation errors; empty when valid
     """
+    errors = []
     if not username or not username.strip() or len(username) > 16:
-        return "Username must contain 1–16 characters."
-    if user_id is None and not password.strip():
-        return "Password is required."
+        errors.append("Username must contain 1–16 characters.")
+    if user_id is None and not password:
+        errors.append("Password is required.")
     if len(password) > 64 or (password and not password.strip()):
-        return "Password must contain 1–64 characters and cannot be only whitespace."
+        errors.append("Password must contain 1–64 characters and cannot be only whitespace.")
     if password != password_confirm:
-        return "Passwords did not match."
-    existing_user = user_service.get_user_by_username(username)
+        errors.append("Passwords did not match.")
+    existing_user = users.get_user_by_username(username)
     if existing_user and existing_user["id"] != user_id:
-        return "Username is already reserved."
-    return None
+        errors.append("Username is already reserved.")
+    return errors
 
 
 def validate_auth_register(username, password, password_confirm):
@@ -40,7 +42,7 @@ def validate_auth_register(username, password, password_confirm):
         password(str): password
         password_confirm(str): password confirmation
     Returns:
-        errors(str | None): possible errors
+        errors(list[str]): all validation errors; empty when valid
     """
     return validate_user(username, password, password_confirm)
 
@@ -52,25 +54,17 @@ def validate_auth_login(username, password):
         username(str): username
         password(str): password
     Returns:
-        errors(str | None): possible errors
+        errors(list[str]): all validation errors; empty when valid
         """
     if not username or not password or len(username) > 16 or len(password) > 64:
-        return "Wrong username or password."
-    user = user_service.get_user_by_username(username)
+        return ["Wrong username or password."]
+    user = users.get_user_by_username(username)
     if not user or not check_password_hash(user["password_hash"], password):
-        return "Wrong username or password."
-    return None
+        return ["Wrong username or password."]
+    return []
 
 def is_positive_integer(value):
-    """
-    Accept optional positive integers that fit in SQLite's integer storage.
-    Args:
-        username(str): username
-        password(str): password
-        password_confirm(str): password confirmation
-    Returns:
-        errors(str | None): possible errors    
-    """
+    """Accept optional positive integers that fit in SQLite's integer storage."""
     return (not value or (value.isascii() and value.isdecimal()
                          and len(value) <= 19 and 0 < int(value) <= 2**63 - 1))
 
@@ -81,38 +75,37 @@ def validate_recipe(form):
     Args:
         form({}): the whole recipe form object
     Returns:
-        errors(str | None): possible errors
+        errors(list[str]): all validation errors; empty when valid
     """
+    errors = []
     food_types = [
-        str(row["id"]) for row in recipe_service.get_food_types()
+        str(row["id"]) for row in recipes.get_food_types()
     ]
 
     dietary_requirements = [
-        str(row["id"]) for row in recipe_service.get_dietary_requirements()
+        str(row["id"]) for row in recipes.get_dietary_requirements()
     ]
 
     for name, limit in (("title", 200), ("description", 10000)):
         value = form.get(name, "").strip()
         if not value or len(value) > limit:
-            return f"{name.capitalize()} must contain 1–{limit} characters."
+            errors.append(f"{name.capitalize()} must contain 1–{limit} characters.")
     for name, choices in (
         ("food_type_id", food_types),
         ("dietary_requirement_id", dietary_requirements),
     ):
         if form.get(name, "") not in ["", *choices]:
-            return f"Invalid {name}."
+            errors.append(f"Invalid {name}.")
     for name in ("servings", "preparation_time"):
         if not is_positive_integer(form.get(name, "")):
-            return f"{name.replace('_', ' ').capitalize()} must be a positive whole number."
-    error = validate_ingredients(form)
-    if error:
-        return error
+            errors.append(f"{name.replace('_', ' ').capitalize()} must be a positive whole number.")
+    errors.extend(validate_ingredients(form))
     steps = form.getlist("recipe_step")
     if not 1 <= len(steps) <= 10 or not any(step.strip() for step in steps):
-        return "Provide 1–10 instruction steps."
+        errors.append("Provide 1–10 instruction steps.")
     if any(len(step.strip()) > 5000 for step in steps):
-        return "Each instruction must be at most 5000 characters."
-    return None
+        errors.append("Each instruction must be at most 5000 characters.")
+    return errors
 
 
 def validate_ingredients(form):
@@ -121,30 +114,33 @@ def validate_ingredients(form):
     Args:
         form({}): the whole recipe form object
     Returns:
-        errors(str | None): possible errors    
+        errors(list[str]): all validation errors; empty when valid
     """
+    errors = []
     ingredients = form.getlist("ingredient")
     amounts = form.getlist("ingredient_amount")
     units = form.getlist("ingredient_unit")
     if not 1 <= len(ingredients) <= 10 or not len(ingredients) == len(amounts) == len(units):
-        return "Provide 1–10 complete ingredient rows."
+        errors.append("Provide 1–10 complete ingredient rows.")
     if not any(ingredient.strip() for ingredient in ingredients):
-        return "Provide at least one ingredient."
-    for ingredient, amount, unit in zip(ingredients, amounts, units):
+        errors.append("Provide at least one ingredient.")
+    for row, (ingredient, amount, unit) in enumerate(
+            zip_longest(ingredients, amounts, units, fillvalue=""), start=1):
         if not ingredient.strip() and (amount.strip() or unit):
-            return "An amount or unit needs an ingredient name."
+            errors.append(f"Ingredient row {row}: an amount or unit needs an ingredient name.")
         if len(ingredient.strip()) > 200:
-            return "Ingredient names must be at most 200 characters."
+            errors.append(f"Ingredient row {row}: names must be at most 200 characters.")
         if unit not in ["", *UNITS]:
-            return "Invalid ingredient unit."
+            errors.append(f"Ingredient row {row}: invalid unit.")
         if amount.strip():
             try:
                 number = float(amount)
             except ValueError:
-                return "Ingredient amounts must be positive numbers."
-            if not math.isfinite(number) or number <= 0:
-                return "Ingredient amounts must be finite positive numbers."
-    return None
+                errors.append(f"Ingredient row {row}: amounts must be positive numbers.")
+            else:
+                if not math.isfinite(number) or number <= 0:
+                    errors.append(f"Ingredient row {row}: amounts must be finite positive numbers.")
+    return errors
 
 
 def validate_comment(value):
@@ -153,11 +149,11 @@ def validate_comment(value):
     Args:
         value(int): comment
     Returns:
-        errors(str | None): possible errors    
+        errors(list[str]): all validation errors; empty when valid
     """
     if not value.strip() or len(value.strip()) > 5000:
-        return "Comments must contain 1–5000 characters."
-    return None
+        return ["Comments must contain 1–5000 characters."]
+    return []
 
 
 def validate_rating(value):
@@ -166,8 +162,8 @@ def validate_rating(value):
     Args:
         value(int): rating value
     Returns:
-        errors(str | None): possible errors
+        errors(list[str]): all validation errors; empty when valid
     """
     if value not in {"1", "2", "3", "4", "5"}:
-        return "Rating must be a whole number from 1 to 5."
-    return None
+        return ["Rating must be a whole number from 1 to 5."]
+    return []

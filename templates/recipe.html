@@ -57,7 +57,7 @@
 
                   {% include "edit_recipe_rating.html" %}
                 {% else %}
-                  <form
+                  <form novalidate
                     action="/recipes/create/rating/{{ recipe.id }}"
                     method="post"
                     class="rating-form flex-center"
@@ -260,7 +260,7 @@
     </nav>
 
     {% if session.user_id %}
-      <form
+      <form novalidate
         action="/recipes/create/comment/{{ recipe.id }}"
         method="post"
         class="comment-form padding-1"

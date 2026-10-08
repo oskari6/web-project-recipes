@@ -1,6 +1,10 @@
 {% if error %}
   <div class="notification notification-error padding-1" role="alert">
-    <span>{{ error }}</span>
+    <ul>
+      {% for message in ([error] if error is string else error) %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
     <button type="button"
             class="notification-close"
             onclick="this.parentElement.remove()">
