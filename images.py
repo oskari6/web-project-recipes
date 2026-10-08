@@ -11,6 +11,26 @@ def upload_root():
     return Path(current_app.config.get("UPLOAD_FOLDER", "uploads"))
 
 
+def save_unique_image(image, directory):
+    """Atomically reserve a new filename; never overwrite an existing upload."""
+    directory.mkdir(parents=True, exist_ok=True)
+    suffix = Path(image.filename).suffix.lower()
+    for _ in range(100):
+        path = directory / f"{uuid4().hex}{suffix}"
+        try:
+            target = path.open("xb")
+        except FileExistsError:
+            continue
+        try:
+            with target:
+                image.save(target)
+        except Exception:
+            path.unlink(missing_ok=True)
+            raise
+        return path
+    raise FileExistsError("Unable to reserve a unique image filename.")
+
+
 def save_profile_picture(image):
     """
     Save a previously validated optional profile upload.
@@ -21,16 +41,7 @@ def save_profile_picture(image):
     """
     if image is None or not image.filename:
         return None
-    filename = f"{uuid4().hex}{Path(image.filename).suffix.lower()}"
-    directory = upload_root() / "users"
-    directory.mkdir(parents=True, exist_ok=True)
-    path = directory / filename
-    try:
-        image.save(path)
-    except OSError:
-        path.unlink(missing_ok=True)
-        raise
-    return filename
+    return save_unique_image(image, upload_root() / "users").name
 
 
 def save_recipe_images(recipe_id, images, con, saved_files):
@@ -46,12 +57,9 @@ def save_recipe_images(recipe_id, images, con, saved_files):
     for image in images:
         if not image.filename:
             continue
-        directory.mkdir(parents=True, exist_ok=True)
-        filename = f"{uuid4().hex}{Path(image.filename).suffix.lower()}"
-        path = directory / filename
+        path = save_unique_image(image, directory)
         saved_files.append(path)
-        image.save(path)
-        recipes.add_image(recipe_id, filename, con)
+        recipes.add_image(recipe_id, path.name, con)
 
 
 def remove_file(path):
